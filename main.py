@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import os
 import sys
+import json
 
 import pandas as pd
 import tensorflow as tf
@@ -13,7 +14,6 @@ from six.moves import urllib
 import csvdata as data
 
 import tensorflow.compat.v2.feature_column as fc
-# import csvdata as data
 
 training = 'https://storage.googleapis.com/tf-datasets/titanic/train.csv'
 testing = 'https://storage.googleapis.com/tf-datasets/titanic/eval.csv'
@@ -22,11 +22,13 @@ csv = data.CSVData(training, testing)
 y_train = csv.get_train().pop('survived')
 y_eval = csv.get_test().pop('survived')
 
-NUM_COLS = csv.get_numeric_columns()
-TEXT_COLS = csv.get_numeric_columns()
+NUM_COLS = csv.get_num_cols()
+TEXT_COLS = csv.get_text_cols()
 
-print(csv.get_numeric_columns())
-print(csv.get_text_columns())
+csv.define_columns()
+
+print(NUM_COLS)
+print(TEXT_COLS)
 
 feature_columns = []
 for feature in TEXT_COLS:
@@ -36,17 +38,51 @@ for feature in TEXT_COLS:
 for feature in NUM_COLS:
   feature_columns.append(tf.feature_column.numeric_column(feature, dtype=tf.float32))
 
-# def make_input_fn(data_df, label_df, num_epochs=10, shuffle=True, batch_size=32):
-#     def input_function():
-#         ds = tf.data.Dataset.from_tensor_slices((dict(data_df), label_df))
-#         if shuffle:
-#         ds = ds.shuffle(1000)
-#         ds = ds.batch(batch_size).repeat(num_epochs)
-#         return ds
-#     return input_function
+def make_input_fn(data_df, label_df, num_epochs=10, shuffle=True, batch_size=32):
+    def input_function():
+        ds = tf.data.Dataset.from_tensor_slices((dict(data_df), label_df))
+        if shuffle:
+            ds = ds.shuffle(1000)
+        ds = ds.batch(batch_size).repeat(num_epochs)
+        return ds
+    return input_function
 
-train_input_fn = make_input_fn(dftrain, y_train)
-eval_input_fn = make_input_fn(dfeval, y_eval, num_epochs=1, shuffle=False)
+train_input_fn = make_input_fn(csv.get_train(), y_train)
+eval_input_fn = make_input_fn(csv.get_test(), y_eval, num_epochs=1, shuffle=False)
+
+age_x_gender = tf.feature_column.crossed_column(['age', 'sex'], hash_bucket_size=100)
+
+derived_feature_columns = [age_x_gender]
+linear_est = tf.estimator.LinearClassifier(feature_columns=feature_columns+derived_feature_columns)
+linear_est.train(train_input_fn)
+result = linear_est.evaluate(eval_input_fn)
+
+# tf.keras.models.
+clear_output()
+print(type(result))
+print(result)
+
+json_object = json.dumps(str(result), indent = 4)
+  
+with open("data.json", "w") as f:
+    f.write(json_object)
+
+
+
+
+
+
+# val = input("enter val")
+
+# ds = make_input_fn(csv.get_train(), y_train, batch_size=10)()
+# for feature_batch, label_batch in ds.take(1):
+#   print('Some feature keys:', list(feature_batch.keys()))
+#   print()
+#   print('A batch of class:', feature_batch['class'].numpy())
+#   print()
+#   print('A batch of Labels:', label_batch.numpy())
+
+
 
 # mnist = tf.keras.datasets.mnist
 

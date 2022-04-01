@@ -9,6 +9,8 @@ class CSVData:
     def __init__(self, train, test):
         self.train = pd.read_csv(train)
         self.test = pd.read_csv(test)
+        self.text_cols = []
+        self.num_cols = []
 
     def get_features(self):
         return self.train.shape[1]
@@ -25,16 +27,34 @@ class CSVData:
     def get_test(self):
         return self.test
 
-    def get_numeric_columns(self):
-        arr = []
-        for col in self.train:
-            if is_numeric_dtype(col[0]):
-                arr.append(col)
-        return arr
+    def get_text_cols(self):
+        return self.text_cols
 
-    def get_text_columns(self):
-        arr = []
-        for col in self.train:
-            if is_string_dtype(col[0]):
-                arr.append(col)
-        return arr
+    def get_num_cols(self):
+        return self.num_cols
+
+    def define_columns(self):
+        for (columnName, columnData) in self.train.iteritems():
+            
+            text = []
+
+            if type(columnData[1]) is str:
+                self.text_cols.append(columnName)
+                continue
+            elif type(columnData[1]) is np.float64:
+                self.num_cols.append(columnName)
+                continue
+            else:
+                for values in columnData:
+                    try:
+                        check = text.index(values)
+                    except ValueError:
+                        text.append(values)
+
+                # divided by arbitrary number 
+                if len(text) < len(columnData) / 4:
+                    self.text_cols.append(columnName)
+                else:
+                    self.num_cols.append(columnName)
+
+            print(type(columnData[1]))            
