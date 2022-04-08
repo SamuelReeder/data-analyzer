@@ -6,11 +6,14 @@ from pandas.api.types import is_numeric_dtype
 
 
 class CSVData:
-    def __init__(self, train, test):
+    # Various methods to obtain vital information about the dataset
+    # This info will be, in part, used to define the optimal parameters of the neural network
+    def __init__(self, train, test, together):
         self.train = pd.read_csv(train)
         self.test = pd.read_csv(test)
         self.text_cols = []
         self.num_cols = []
+        self.together = together
 
     def get_features(self):
         return self.train.shape[1]

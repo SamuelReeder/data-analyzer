@@ -5,20 +5,10 @@
  */
 package the_app;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.File;
-import static java.lang.Thread.sleep;
-import java.util.Random;
-import java.util.Scanner;
-import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -26,31 +16,60 @@ import java.util.stream.Collectors;
  */
 public class Tester {
 
-    public static void main(String args[]) throws FileNotFoundException, IOException {
+    public static void main(String args[]) throws FileNotFoundException {
 
-        boolean running = true;
-//        BufferedInputStream reader = new BufferedInputStream(new FileInputStream("out.txt"));
-        BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream("data.json"), StandardCharsets.UTF_8));
-
-        while (running) {
-            if (r.read() > 0) {
-//                System.out.print((char) reader.read());
-                System.out.println(r.lines().collect(Collectors.joining(",")));
-                System.out.print("l");
-            } else {
-                try {
-                    sleep(3000);
-                } catch (InterruptedException ex) {
-                    running = false;
-                }
-            }
-        }
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-//            String line;
-//            while(true) {
-//                line = reader.readLine(); // blocks until next line available
-//                // do whatever You want with line
+//        boolean running = true;
+//        BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream("data.json"), StandardCharsets.UTF_8));
+//
+//        while (running) {
+//            if (r.read() > 0) {
+//                System.out.println(r.lines().collect(Collectors.joining(",")));
+//                System.out.print("l");
+//            } else {
+//                try {
+//                    sleep(3000);
+//                } catch (InterruptedException ex) {
+//                    running = false;
+//                }
 //            }
+//        }
+
+//        Scanner sf = new Scanner(new File("requirements.txt"));
+//        System.out.println(sf.nextLine());
+
+        
+        String s = null;
+
+        try  {
+            ProcessBuilder builder = new ProcessBuilder(
+            "cmd.exe", "/c", ".\\venv\\Scripts\\activate && python main.py");
+            builder.redirectErrorStream(true);
+            Process proc = builder.start();
+            
+            System.out.println(proc.info());
+            
+            BufferedReader stdInput = new BufferedReader(new 
+                 InputStreamReader(proc.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new 
+                 InputStreamReader(proc.getErrorStream()));
+
+            System.out.println("Here is the standard output of the command:\n");
+            while ((s = stdInput.readLine()) != null) {
+                System.out.println(s);
+            }
+            
+            System.out.println("Here is the standard error of the command (if any):\n");
+            while ((s = stdError.readLine()) != null) {
+                System.out.println(s);
+            }
+            
+            System.exit(0);
+        }
+        catch (IOException e) {
+            System.out.println(e);
+            System.exit(-1);
+        }
     }
 
 }

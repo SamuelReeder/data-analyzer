@@ -1,11 +1,6 @@
-/**
- * There is essentially nothing in this file for students to edit.
- */
-
 package the_app;
 
 /**
- * Bootstrap for running TheApp.
  * 
  * @author cheng
  */
