@@ -7,7 +7,9 @@ from pandas.api.types import is_numeric_dtype
 
 class CSVData:
     # Various methods to obtain vital information about the dataset
-    # This info will be, in part, used to define the optimal parameters of the neural network
+    # This info will be, in part, used to define the optimal parameters of the neural network, including:
+    #   - density of the layers
+    #   - amount of possible prediction outputs
     def __init__(self, train, test, together):
         self.train = pd.read_csv(train)
         self.test = pd.read_csv(test)

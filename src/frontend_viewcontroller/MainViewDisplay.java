@@ -14,14 +14,7 @@ public class MainViewDisplay extends JFrame {
 
     BackendModelSetup theBackendModel;
 
-    JLabel textContentLabel;
-    JTextArea textContentField;
-    JButton importModelFromFileButton;
-    JButton saveModelToFileButton;
-    JButton trainAction;
-    JButton predictButton;
-    JButton infoAction;
-    JScrollPane textContentPane;
+//  Declare vars for representing the varioys elements of the GUI
 
     public MainViewDisplay(BackendModelSetup aBackend) {
         this.theBackendModel = aBackend;

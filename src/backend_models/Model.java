@@ -16,12 +16,11 @@ import java.io.InputStreamReader;
 public class Model {
 
     public String path;
-    public String fileContent;
     public String consoleOutput;
+    public String[] vars;
 
     public Model(String path) throws IOException {
         this.path = path;
-        this.fileContent = Model.importModel(this.path);
     }
     
     public void trainModel() {
@@ -32,9 +31,7 @@ public class Model {
             "cmd.exe", "/c", ".\\venv\\Scripts\\activate && python main.py");
             builder.redirectErrorStream(true);
             Process p = builder.start();
-            
-            System.out.println(p.info());
-            
+                        
             BufferedReader input = new BufferedReader(new 
                  InputStreamReader(p.getInputStream()));
 
@@ -45,7 +42,7 @@ public class Model {
         catch (IOException err) {
             System.out.println(err);
         }
-//      Calls to python to train a machine learning
+//      Calls to python to train the machine learning
 //      model, and provides necessary parameters.
 
 //      Will append console output to a text field 
@@ -63,14 +60,23 @@ public class Model {
 //      import.
     }
     
+    public void setVars(String[] vars) {
+//      Sets the responding variables of the data
+    }
+    
+    public String[] getVars() {
+//      A method to access relevant variables   
+        return this.vars;
+    }
+    
 //    The above methods are very general, I would like to implement others that have more specific use cases too
     
     public void saveModel(String path) throws IOException {
-//        Saves model by calling a python function
+//      Saves model by calling a python function
     }
 
     public static String importModel(String path) throws IOException {
-//        Imports a specific model to be used
+//      Imports a specific model to be used
         return "";
     }
 }

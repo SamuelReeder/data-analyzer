@@ -4,7 +4,6 @@ import backend_models.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 /**
  *
@@ -62,7 +61,15 @@ public class ModelsAndViewsController {
         }
     }
     
-    
+    private class SetVarsAction implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+//      Connects to a text input field such that the user can
+//      enter the names of the responding variables fpr the
+//      model to optimize its training.
+        }
+    }
 
     public ModelsAndViewsController(BackendModelSetup aBackend, MainViewDisplay aMainViewDisplay) {
         this.theBackendModel = aBackend;
@@ -71,6 +78,6 @@ public class ModelsAndViewsController {
     }
     
     private void initController() {
-//        Initiate the controller
+//      Initiate the controller
     }
 }
