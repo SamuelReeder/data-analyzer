@@ -13,7 +13,16 @@ import javax.swing.*;
 public class MainViewDisplay extends JFrame {
 
     BackendModelSetup theBackendModel;
-
+    
+    JLabel textContentLabel;
+    JTextArea textContentField;
+    JButton importModelFromFileButton;
+    JButton saveModelToFileButton;
+    JButton trainAction;
+    JButton predictButton;
+    JButton infoAction;
+    JScrollPane textContentPane;
+    
 //  Declare vars for representing the varioys elements of the GUI
 
     public MainViewDisplay(BackendModelSetup aBackend) {
@@ -29,8 +38,89 @@ public class MainViewDisplay extends JFrame {
         
         GridBagConstraints c;
         
-//      This section will define the layout and properties of each element in the GUI
+//this.setMinimumSize(new Dimension(600, 200));
+        
+        this.textContentLabel = new JLabel();
+        this.textContentLabel.setText("Text content"); 
 
+        this.textContentField = new JTextArea();
+        this.textContentField.setSize(500, 500);
+        this.textContentField.setLineWrap(true);
+        this.textContentField.setEditable(true);
+        this.textContentField.setWrapStyleWord(rootPaneCheckingEnabled);
+        
+       
+        this.importModelFromFileButton = new JButton();
+        this.importModelFromFileButton.setText("Import Model");
+
+        this.saveModelToFileButton = new JButton();
+        this.saveModelToFileButton.setText("Save Model");
+
+        this.trainAction = new JButton();
+        this.trainAction.setText("Train");
+
+        this.predictButton = new JButton();
+        this.predictButton.setText("Predict");
+
+        this.textContentPane = new JScrollPane(this.textContentField);
+        this.textContentPane.setSize(500, 500);
+
+
+        /*
+         * Choose your LayoutManager for the mainDisplayPane here. See:
+         * http://docs.oracle.com/javase/tutorial/uiswing/layout/visual.html
+         *
+         * I suggest GridBagLayout. For more details, see:
+         * http://docs.oracle.com/javase/tutorial/uiswing/layout/gridbag.html
+         */
+        
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        mainDisplayPane.add(this.textContentLabel, c);
+
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = 2;
+        c.gridheight = 2;
+        c.fill = GridBagConstraints.BOTH;
+        c.ipadx = 300;
+        c.ipady = 200;
+        mainDisplayPane.add(this.textContentPane, c);
+        
+        c = new GridBagConstraints();
+        c.gridx = 2;
+        c.gridy = 0;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        mainDisplayPane.add(this.importModelFromFileButton, c);
+
+        c = new GridBagConstraints();
+        c.gridx = 2;
+        c.gridy = 1;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.insets = new Insets(50, 0, 0, 0);
+        mainDisplayPane.add(this.trainAction, c);
+
+        c = new GridBagConstraints();
+        c.gridx = 2;
+        c.gridy = 2;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        mainDisplayPane.add(this.predictButton, c);
+
+        c = new GridBagConstraints();
+        c.gridx = 2;
+        c.gridy = 3;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        mainDisplayPane.add(this.saveModelToFileButton, c);
+        
+        
         this.pack();
     }
 

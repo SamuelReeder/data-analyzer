@@ -4,17 +4,17 @@ import backend_models.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 /**
  *
  * @author sam
  */
 public class ModelsAndViewsController {
-    
+
     BackendModelSetup theBackendModel;
     MainViewDisplay theMainViewDisplay;
-    
-    
+
     private class ImportModelAction implements ActionListener {
 
         @Override
@@ -38,8 +38,20 @@ public class ModelsAndViewsController {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
-//      Call the backend model to train the neural network.
-//      Update the GUI when the model is trained.
+            try {
+
+                theBackendModel.theModel = new Model("");
+
+                if (theBackendModel.theModel == null) {
+                    System.out.println("Model is null");
+                    return;
+                }
+
+                theBackendModel.theModel.trainModel();
+            } catch (IOException err) {
+                System.out.println(err);
+            }
+
         }
     }
 
@@ -51,7 +63,7 @@ public class ModelsAndViewsController {
 //      Update the GUI to display prediction.
         }
     }
-    
+
     private class InfoAction implements ActionListener {
 
         @Override
@@ -60,7 +72,7 @@ public class ModelsAndViewsController {
 //      software and how it generally works.
         }
     }
-    
+
     private class SetVarsAction implements ActionListener {
 
         @Override
@@ -76,8 +88,8 @@ public class ModelsAndViewsController {
         this.theMainViewDisplay = aMainViewDisplay;
         this.initController();
     }
-    
+
     private void initController() {
-//      Initiate the controller
+        this.theMainViewDisplay.trainAction.addActionListener(new TrainAction());
     }
 }
