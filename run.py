@@ -21,6 +21,16 @@ csv = data.CSVData(training, testing, False)
 
 actual_data = p.PreProcessing(csv)
 
+inputs, numeric_inputs = actual_data.defineInput()
+
+x = layers.Concatenate()(list(numeric_inputs.values()))
+norm = layers.Normalization()
+norm.adapt(np.array(actual_data.train[numeric_inputs.keys()]))
+all_numeric_inputs = norm(x)
+
+preprocessed_inputs = [all_numeric_inputs]
+
+
 train = csv.get_train()
 test = csv.get_test()
 features = train.copy()
@@ -29,26 +39,29 @@ labels = features.pop("survived")
 
 test_features = test.copy()
 
+
 # NUM_COLS = csv.get_num_cols()
 # TEXT_COLS = csv.get_text_cols()
 
 # csv.define_columns()
 
-inputs = {}
+# inputs = {}
 
-for name, column in features.items():
-  dtype = column.dtype
-  if dtype == object:
-    dtype = tf.string
-  else:
-    dtype = tf.float32
+# for name, column in features.items():
+#   dtype = column.dtype
+#   if dtype == object:
+#     dtype = tf.string
+#   else:
+#     dtype = tf.float32
 
-  inputs[name] = tf.keras.Input(shape=(1,), name=name, dtype=dtype)
+#   inputs[name] = tf.keras.Input(shape=(1,), name=name, dtype=dtype)
 
-print(inputs)
+# print(inputs)
 
-numeric_inputs = {name:input for name,input in inputs.items()
-                  if input.dtype==tf.float32}
+# numeric_inputs = {name:input for name,input in inputs.items()
+#                   if input.dtype==tf.float32}
+
+inputs, numeric_inputs = actual_data.defineInput()
 
 x = layers.Concatenate()(list(numeric_inputs.values()))
 norm = layers.Normalization()

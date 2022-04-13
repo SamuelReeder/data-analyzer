@@ -4,8 +4,13 @@ import backend_models.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.IOException;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
 /**
  *
  * @author sam
@@ -82,6 +87,62 @@ public class ModelsAndViewsController {
 //      model to optimize its training.
         }
     }
+    
+    private class ReadConsoleOutput implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            try {
+                String s = null;
+                            
+                BufferedReader r = theBackendModel.theModel.console;
+
+                while ((s = r.readLine()) != null) {
+                    theBackendModel.theModel.output += s;
+                    theMainViewDisplay.updateTextContentField();
+
+                }
+
+            } catch (IOException err) {
+                System.out.println(err);
+            }
+        }
+    }
+//    public class ConsoleReader extends SwingWorker<String, Integer> {
+//
+//        ConsoleReader(JTextArea textArea, int numbersToFind) {
+//            //initialize
+//        }
+//
+//        @Override
+//        public String doInBackground() {
+//            
+//            try {
+//                String s = null;
+//            
+//                BufferedReader r = theBackendModel.theModel.console;
+//
+//                while ((s = r.readLine()) != null) {
+//                    s += theBackendModel.theModel.console;
+//                }
+//
+//                return s;
+//            } catch (IOException err) {
+//                System.out.println(err);
+//            }
+//            
+//            return "";
+//            
+//        }
+//
+//        @Override
+//        protected void process(String chunks) {
+//            for (int i = 0; i < chunks.length(); i++) {
+//                textArea.append(number + "\n");
+//            }
+//        }
+//    }
+
 
     public ModelsAndViewsController(BackendModelSetup aBackend, MainViewDisplay aMainViewDisplay) {
         this.theBackendModel = aBackend;

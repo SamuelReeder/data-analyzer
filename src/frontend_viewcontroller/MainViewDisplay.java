@@ -125,9 +125,13 @@ public class MainViewDisplay extends JFrame {
     }
 
     void updateTextContentField() {
-//      Will append the contents of the cmd.exe runtime that is training
-//      the model and update text field with various pieces of information
-//      that will be useful to the user.
+        if (this.theBackendModel.theModel == null) {
+            System.out.println("It is null");
+            this.textContentField.setText("");
+        } else {
+//            this.textContentField.setText(this.theBackendModel.theModel.console);
+              this.textContentField.setText(this.theBackendModel.theModel.output);
+        }
     }
     
     void openInfoPanel() {

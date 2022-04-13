@@ -1,46 +1,49 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import json
-
-import pandas as pd
 import tensorflow as tf
 import numpy as np
+import preprocessing as p
 import csvdata as data
 from tensorflow.keras import layers
 
-training = input()
-testing = input()
+np.set_printoptions(precision=3, suppress=True)
+
+training = 'https://storage.googleapis.com/tf-datasets/titanic/train.csv'
+testing = 'https://storage.googleapis.com/tf-datasets/titanic/eval.csv'
 csv = data.CSVData(training, testing, False)
 
-responding = csv.get_responding()
+d = p.PreProcessing(csv)
 
-training_data = csv.get_train()
-features = training_data.copy()
-labels = features.pop(responding)
+inputs, numeric_inputs = d.defineInput()
 
-csv.define_columns()
+preprocessed_inputs = d.preprocess()
 
-def preprocessing():
-    # Will preprocess the data to maximuze optimization to train the model.
-    return
+preprocessing = tf.keras.Model(inputs, preprocessed_inputs)
 
-def epochs():
-    # Attempt to identify optimal number of epochs
-    return
+features_dict, feat_dict = d.defineFeaturesDict(d.features)
+
+preprocessing(feat_dict)
+
+test_features_dict, test_feat_dict = d.defineFeaturesDict(d.test_features)
 
 def model(preprocessing_head, inputs):
-  network = tf.keras.Sequential([
-    # Define the layers of the neural network according to the dataset
+  body = tf.keras.Sequential([
+    layers.Dense(64),
+    layers.Dense(1)
   ])
 
-  return
+  preprocessed_inputs = preprocessing_head(inputs)
+  result = body(preprocessed_inputs)
+  temp_model = tf.keras.Model(inputs, result)
 
-model = model(preprocessing())
+  temp_model.compile(loss=tf.losses.BinaryCrossentropy(from_logits=True),
+                optimizer=tf.optimizers.Adam())
+  return temp_model
 
-model.fit(epochs=epochs())
+model = model(preprocessing, inputs)
+model.fit(x=features_dict, y=d.labels, epochs=10)
 
-json_object = json.dumps(str(model), indent = 4)
-  
-with open("data.json", "w") as f:
-    f.write(json_object)
-    # Write to json file 
+results = model.evaluate(x=features_dict, y=d.labels, batch_size=128)
+print(results)
+
+model.save('models/model')

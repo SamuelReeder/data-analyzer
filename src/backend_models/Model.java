@@ -18,6 +18,8 @@ public class Model {
     public String path;
     public String consoleOutput;
     public String[] vars;
+    public BufferedReader console;
+    public String output;
 
     public Model(String path) throws IOException {
         this.path = path;
@@ -34,19 +36,15 @@ public class Model {
                         
             BufferedReader input = new BufferedReader(new 
                  InputStreamReader(p.getInputStream()));
-
+            
             while ((s = input.readLine()) != null) {
+                this.consoleOutput += s;
                 System.out.println(s);
             }
         }
         catch (IOException err) {
             System.out.println(err);
         }
-//      Calls to python to train the machine learning
-//      model, and provides necessary parameters.
-
-//      Will append console output to a text field 
-//      so the user can observe the training process.
     }
     
     public void predict() {
