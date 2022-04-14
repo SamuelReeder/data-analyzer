@@ -6,9 +6,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
+import static java.lang.Thread.sleep;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 /**
@@ -24,8 +27,12 @@ public class ModelsAndViewsController {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
-//      Allows the user to import a trained model that 
-//      the user can use to make predictions.
+            try {
+                theBackendModel.theModel = new Model("");
+            } catch (IOException ex) {
+                Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
         }
     }
 
@@ -43,18 +50,44 @@ public class ModelsAndViewsController {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
-            try {
-
-                theBackendModel.theModel = new Model("");
-
+            
                 if (theBackendModel.theModel == null) {
                     System.out.println("Model is null");
                     return;
                 }
 
                 theBackendModel.theModel.trainModel();
-            } catch (IOException err) {
-                System.out.println(err);
+      
+
+        }
+    }
+    
+    private class OutputAction implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            try {
+
+                String s = null;
+                            
+//                BufferedReader r = theBackendModel.theModel.console;
+
+                System.out.println("Testing");
+                while (true) {
+                    sleep(1000);
+                    System.out.println("THIS IS IT");
+//                    while ((s = r.readLine()) != null) {
+//                        theBackendModel.theModel.output += s;
+                        theMainViewDisplay.updateTextContentField();
+//                        System.out.println(theBackendModel.theModel.cons);
+
+//                    }
+                }
+                
+//            } catch (IOException err) {
+//                System.out.println(err);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         }
@@ -64,8 +97,12 @@ public class ModelsAndViewsController {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
-//      Call the backend model to perform a prediction.
-//      Update the GUI to display prediction.
+            if (theBackendModel.theModel == null) {
+                    System.out.println("Model is null");
+                    return;
+            }
+            theMainViewDisplay.getPrediction();
+            theBackendModel.theModel.predict();
         }
     }
 
@@ -108,41 +145,6 @@ public class ModelsAndViewsController {
             }
         }
     }
-//    public class ConsoleReader extends SwingWorker<String, Integer> {
-//
-//        ConsoleReader(JTextArea textArea, int numbersToFind) {
-//            //initialize
-//        }
-//
-//        @Override
-//        public String doInBackground() {
-//            
-//            try {
-//                String s = null;
-//            
-//                BufferedReader r = theBackendModel.theModel.console;
-//
-//                while ((s = r.readLine()) != null) {
-//                    s += theBackendModel.theModel.console;
-//                }
-//
-//                return s;
-//            } catch (IOException err) {
-//                System.out.println(err);
-//            }
-//            
-//            return "";
-//            
-//        }
-//
-//        @Override
-//        protected void process(String chunks) {
-//            for (int i = 0; i < chunks.length(); i++) {
-//                textArea.append(number + "\n");
-//            }
-//        }
-//    }
-
 
     public ModelsAndViewsController(BackendModelSetup aBackend, MainViewDisplay aMainViewDisplay) {
         this.theBackendModel = aBackend;
@@ -152,5 +154,8 @@ public class ModelsAndViewsController {
 
     private void initController() {
         this.theMainViewDisplay.trainAction.addActionListener(new TrainAction());
+        this.theMainViewDisplay.outputButton.addActionListener(new OutputAction());
+        this.theMainViewDisplay.importModelFromFileButton.addActionListener(new ImportModelAction());
+        this.theMainViewDisplay.predictButton.addActionListener(new PredictAction());
     }
 }

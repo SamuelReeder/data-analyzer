@@ -20,6 +20,9 @@ public class MainViewDisplay extends JFrame {
     JButton saveModelToFileButton;
     JButton trainAction;
     JButton predictButton;
+    JButton outputButton;
+    JTextArea predictionField;
+
     JButton infoAction;
     JScrollPane textContentPane;
     
@@ -44,10 +47,16 @@ public class MainViewDisplay extends JFrame {
         this.textContentLabel.setText("Text content"); 
 
         this.textContentField = new JTextArea();
-        this.textContentField.setSize(500, 500);
+        this.textContentField.setSize(250, 500);
         this.textContentField.setLineWrap(true);
         this.textContentField.setEditable(true);
         this.textContentField.setWrapStyleWord(rootPaneCheckingEnabled);
+        
+        this.predictionField = new JTextArea();
+        this.predictionField.setSize(250, 500);
+        this.predictionField.setLineWrap(true);
+        this.predictionField.setEditable(true);
+        this.predictionField.setWrapStyleWord(rootPaneCheckingEnabled);
         
        
         this.importModelFromFileButton = new JButton();
@@ -58,6 +67,10 @@ public class MainViewDisplay extends JFrame {
 
         this.trainAction = new JButton();
         this.trainAction.setText("Train");
+        
+        this.outputButton = new JButton();
+        this.outputButton.setText("Output");
+
 
         this.predictButton = new JButton();
         this.predictButton.setText("Predict");
@@ -84,12 +97,22 @@ public class MainViewDisplay extends JFrame {
         c = new GridBagConstraints();
         c.gridx = 0;
         c.gridy = 1;
-        c.gridwidth = 2;
+        c.gridwidth = 1;
         c.gridheight = 2;
-        c.fill = GridBagConstraints.BOTH;
-        c.ipadx = 300;
-        c.ipady = 200;
+        c.fill = GridBagConstraints.VERTICAL;
+//        c.ipadx = 300;
+//        c.ipady = 200;
         mainDisplayPane.add(this.textContentPane, c);
+        
+        c = new GridBagConstraints();
+        c.gridx = 1;
+        c.gridy = 1;
+        c.gridwidth = 1;
+        c.gridheight = 2;
+        c.fill = GridBagConstraints.VERTICAL;
+//        c.ipadx = 300;
+//        c.ipady = 200;
+        mainDisplayPane.add(this.predictionField, c);
         
         c = new GridBagConstraints();
         c.gridx = 2;
@@ -112,10 +135,17 @@ public class MainViewDisplay extends JFrame {
         c.gridwidth = 1;
         c.gridheight = 1;
         mainDisplayPane.add(this.predictButton, c);
-
+        
         c = new GridBagConstraints();
         c.gridx = 2;
         c.gridy = 3;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        mainDisplayPane.add(this.outputButton, c);
+
+        c = new GridBagConstraints();
+        c.gridx = 2;
+        c.gridy = 4;
         c.gridwidth = 1;
         c.gridheight = 1;
         mainDisplayPane.add(this.saveModelToFileButton, c);
@@ -130,10 +160,19 @@ public class MainViewDisplay extends JFrame {
             this.textContentField.setText("");
         } else {
 //            this.textContentField.setText(this.theBackendModel.theModel.console);
-              this.textContentField.setText(this.theBackendModel.theModel.output);
+              this.textContentField.setText(this.theBackendModel.theModel.consoleOutput);
         }
     }
     
+    void getPrediction() {
+        if (this.theBackendModel.theModel == null) {
+            System.out.println("It is null");
+        } else {
+//            this.textContentField.setText(this.theBackendModel.theModel.console);
+              this.theBackendModel.theModel.prediction = this.textContentField.getText();
+        }
+        System.out.println(this.theBackendModel.theModel.prediction);
+    }
     void openInfoPanel() {
 //      Will open a panel to show information about the software.
 //        -  Ideally, this will be a separate GUI.
