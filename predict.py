@@ -1,3 +1,4 @@
+from numpy import float64
 import tensorflow as tf
 
 sample = {
@@ -14,17 +15,24 @@ sample = {
 }
 
 with open('predict.txt') as f:
-    sample = f.readlines()
-    print(sample)
-    print(type(sample))
-    print(len(sample))
+    if f.readable:
+      sample = f.read()
 
-def Convert(lst):
-    res_dct = {lst[i]: lst[i + 1] for i in range(0, len(sample), 2)}
-    return res_dct
+def config_type(val):
+    try: 
+        return float64(val)
+    except:
+        return val
 
-converted = Convert(sample)
-loaded_model = tf.keras.models.load_model('models/model')
+def convert(lst):
+    pred_list = lst.split()
+    res_dct = {pred_list[i].strip(): config_type(pred_list[i + 1]) for i in range(0, len(pred_list) - 1, 2)}
+    return res_dct 
+
+converted = convert(sample)
+print(converted)
+
+loaded_model = tf.keras.models.load_model('models\model')
 
 input_dict = {name: tf.convert_to_tensor([value]) for name, value in converted.items()}
 
@@ -32,6 +40,6 @@ predict = loaded_model.predict(input_dict)
 prob = tf.nn.sigmoid(predict[0])
 
 print(
-    "This persoj had a %.1f percent probability "
+    "This person had a %.1f percent probability "
     "of surviving." % (100 * prob)
 )

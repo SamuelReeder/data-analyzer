@@ -1,17 +1,18 @@
-  'sex': 'male'
-	
-  'age': 34
-
-  'n_siblings_spouses': 1
-
-  'parch': 0
-
-  'fare': 7.25
-	
-  'class': 'third'
-	
-  'deck': 'unknown'
-
-  'embark_town': 'Southampton'
-
-  'alone': 'n'
+sex
+female
+age 
+19
+n_siblings_spouses 
+1
+parch 
+0
+fare
+8.72
+class
+first
+deck
+unknown
+embark_town
+Southampton
+alone
+n
