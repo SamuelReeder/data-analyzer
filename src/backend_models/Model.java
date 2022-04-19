@@ -16,7 +16,7 @@ import java.util.Arrays;
  *
  * @author sam
  */
-public class Model {
+public class Model extends Information {
 
     public String path;
     public String consoleOutput;
@@ -24,11 +24,10 @@ public class Model {
     public BufferedReader console;
     public String output;
     public String prediction;
-
+    
     public Model(String path) throws IOException {
         this.path = path;
         this.consoleOutput = "";
-//        this.console = 
     }
     
     public void trainModel() {
@@ -36,7 +35,7 @@ public class Model {
 
         try  {
             ProcessBuilder builder = new ProcessBuilder(
-            "cmd.exe", "/c", ".\\venv\\Scripts\\activate && python main.py");
+            "cmd.exe", "/c", ".\\venv\\Scripts\\activate && python main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getResponding());
             builder.redirectErrorStream(true);
             Process p = builder.start();
                         

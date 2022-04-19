@@ -55,6 +55,8 @@ public class ModelsAndViewsController {
                     System.out.println("Model is null");
                     return;
                 }
+                
+                theMainViewDisplay.updateBackend();
 
                 theBackendModel.theModel.trainModel();
       

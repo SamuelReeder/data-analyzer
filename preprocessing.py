@@ -1,23 +1,27 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 from unicodedata import numeric
 
+import csvdata as csv
+
 import tensorflow as tf
 import numpy as np
 from IPython.display import clear_output
 # import six.moves
 from tensorflow.keras import layers
 
-class PreProcessing:
+class PreProcessing (csv.CSVData):
 
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, responding, train, test, together):
+        # self.data = data
 
-        self.train = self.data.get_train()
-        self.test = self.data.get_test()
+        csv.CSVData.__init__(self, train, test, together)
+
+        self.train = self.get_train()
+        self.test = self.get_test()
         self.features = self.train.copy()
-        self.labels = self.features.pop("survived")
+        print('responsive', responding)
+        self.labels = self.features.pop(responding) 
         self.test_features = self.test.copy()
-
 
     def convertToTensor(self):
         return

@@ -22,6 +22,8 @@ public class MainViewDisplay extends JFrame {
     JButton predictButton;
     JButton outputButton;
     JTextArea predictionField;
+    
+    JTextField trainingInput, testingInput, respondingInput;
 
     JButton infoAction;
     JScrollPane textContentPane;
@@ -42,6 +44,15 @@ public class MainViewDisplay extends JFrame {
         GridBagConstraints c;
         
 //this.setMinimumSize(new Dimension(600, 200));
+
+        this.trainingInput = new JTextField();
+        this.trainingInput.setToolTipText("Provide URL or path to training dataset");
+        
+        this.testingInput = new JTextField();
+        this.testingInput.setToolTipText("Provide URL or path to testing dataset");
+        
+        this.respondingInput = new JTextField();
+        this.respondingInput.setToolTipText("Provide name of responsive column");
         
         this.textContentLabel = new JLabel();
         this.textContentLabel.setText("Text content"); 
@@ -87,6 +98,31 @@ public class MainViewDisplay extends JFrame {
          * http://docs.oracle.com/javase/tutorial/uiswing/layout/gridbag.html
          */
         
+        
+        c = new GridBagConstraints();
+        c.gridx = 1;
+        c.gridy = 0;
+//        c.gridwidth = 1;
+//        c.gridheight = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        mainDisplayPane.add(this.trainingInput, c);
+
+        c = new GridBagConstraints();
+        c.gridx = 1;
+        c.gridy = 1;
+//        c.gridwidth = 1;
+//        c.gridheight = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        mainDisplayPane.add(this.testingInput, c);
+
+        c = new GridBagConstraints();
+        c.gridx = 1;
+        c.gridy = 2;
+//        c.gridwidth = 1;
+//        c.gridheight = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        mainDisplayPane.add(this.respondingInput, c);
+
         c = new GridBagConstraints();
         c.gridx = 0;
         c.gridy = 0;
@@ -106,7 +142,7 @@ public class MainViewDisplay extends JFrame {
         
         c = new GridBagConstraints();
         c.gridx = 1;
-        c.gridy = 1;
+        c.gridy = 3;
         c.gridwidth = 1;
         c.gridheight = 2;
         c.fill = GridBagConstraints.VERTICAL;
@@ -172,6 +208,16 @@ public class MainViewDisplay extends JFrame {
               this.theBackendModel.theModel.prediction = this.textContentField.getText();
         }
         System.out.println(this.theBackendModel.theModel.prediction);
+    }
+    
+    void updateBackend() {
+        if (this.theBackendModel.theModel == null) {
+            System.out.println("It is null");
+        } else {
+            this.theBackendModel.theModel.setTraining(this.trainingInput.getText().trim());
+            this.theBackendModel.theModel.setTesting(this.testingInput.getText().trim());
+            this.theBackendModel.theModel.setResponding(this.respondingInput.getText().trim());
+        }
     }
     void openInfoPanel() {
 //      Will open a panel to show information about the software.
