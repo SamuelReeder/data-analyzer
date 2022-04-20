@@ -5,6 +5,7 @@ import backend_models.*;
 import java.awt.*;
 import java.io.*;
 import javax.swing.*;
+import javax.swing.border.EtchedBorder;
 
 /**
  *
@@ -15,21 +16,15 @@ public class MainViewDisplay extends JFrame {
     BackendModelSetup theBackendModel;
     
     JLabel textContentLabel;
-    JTextArea textContentField;
-    JButton importModelFromFileButton;
-    JButton saveModelToFileButton;
-    JButton trainAction;
-    JButton predictButton;
-    JButton outputButton;
-    JTextArea predictionField;
+    JTextArea textContentField, predictionField;
     
+    JButton infoButton, outputButton, predictButton, trainButton, saveModelToFileButton, importModelFromFileButton;
     JTextField trainingInput, testingInput, respondingInput;
 
-    JButton infoAction;
     JScrollPane textContentPane;
     
-//  Declare vars for representing the varioys elements of the GUI
-
+    JSeparator trainPredict;
+    
     public MainViewDisplay(BackendModelSetup aBackend) {
         this.theBackendModel = aBackend;
         this.initComponents();
@@ -43,7 +38,7 @@ public class MainViewDisplay extends JFrame {
         
         GridBagConstraints c;
         
-//this.setMinimumSize(new Dimension(600, 200));
+        this.setMinimumSize(new Dimension(400, 400));
 
         this.trainingInput = new JTextField();
         this.trainingInput.setToolTipText("Provide URL or path to training dataset");
@@ -55,7 +50,8 @@ public class MainViewDisplay extends JFrame {
         this.respondingInput.setToolTipText("Provide name of responsive column");
         
         this.textContentLabel = new JLabel();
-        this.textContentLabel.setText("Text content"); 
+        this.textContentLabel.setText("Data Analyzer"); 
+        this.textContentLabel.setFont(new Font("Serif", Font.BOLD, 30));
 
         this.textContentField = new JTextArea();
         this.textContentField.setSize(250, 500);
@@ -69,25 +65,32 @@ public class MainViewDisplay extends JFrame {
         this.predictionField.setEditable(true);
         this.predictionField.setWrapStyleWord(rootPaneCheckingEnabled);
         
-       
         this.importModelFromFileButton = new JButton();
         this.importModelFromFileButton.setText("Import Model");
 
         this.saveModelToFileButton = new JButton();
         this.saveModelToFileButton.setText("Save Model");
 
-        this.trainAction = new JButton();
-        this.trainAction.setText("Train");
+        this.trainButton = new JButton();
+        this.trainButton.setText("Train");
         
         this.outputButton = new JButton();
         this.outputButton.setText("Output");
 
+        this.infoButton = new JButton();
+        this.infoButton.setText("Info");
+        this.infoButton.setFocusPainted(false);
+        this.infoButton.setBackground(Color.BLUE);
+        this.infoButton.setForeground(Color.white);
 
         this.predictButton = new JButton();
         this.predictButton.setText("Predict");
 
         this.textContentPane = new JScrollPane(this.textContentField);
         this.textContentPane.setSize(500, 500);
+        
+        this.trainPredict = new JSeparator();
+        this.trainPredict.setOrientation(SwingConstants.HORIZONTAL);
 
 
         /*
@@ -100,93 +103,94 @@ public class MainViewDisplay extends JFrame {
         
         
         c = new GridBagConstraints();
-        c.gridx = 1;
+        c.gridx = 0;
         c.gridy = 0;
-//        c.gridwidth = 1;
-//        c.gridheight = 1;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.gridheight = 1;
+        c.anchor = GridBagConstraints.CENTER;
+        c.insets = new Insets(20, 20, 20, 20);
+        mainDisplayPane.add(this.textContentLabel, c);
+        
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = 1;
+        c.gridheight = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
-        mainDisplayPane.add(this.trainingInput, c);
-
+        c.insets = new Insets(5, 5, 5, 5);
+        mainDisplayPane.add(this.infoButton, c);
+        
         c = new GridBagConstraints();
         c.gridx = 1;
         c.gridy = 1;
-//        c.gridwidth = 1;
-//        c.gridheight = 1;
+        c.gridwidth = 3;
+        c.gridheight = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
-        mainDisplayPane.add(this.testingInput, c);
-
+        c.insets = new Insets(5, 5, 5, 5);
+        mainDisplayPane.add(this.trainingInput, c);
+        
         c = new GridBagConstraints();
         c.gridx = 1;
         c.gridy = 2;
-//        c.gridwidth = 1;
-//        c.gridheight = 1;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        mainDisplayPane.add(this.respondingInput, c);
-
-        c = new GridBagConstraints();
-        c.gridx = 0;
-        c.gridy = 0;
-        c.gridwidth = 1;
+        c.gridwidth = 3;
         c.gridheight = 1;
-        mainDisplayPane.add(this.textContentLabel, c);
-
-        c = new GridBagConstraints();
-        c.gridx = 0;
-        c.gridy = 1;
-        c.gridwidth = 1;
-        c.gridheight = 2;
-        c.fill = GridBagConstraints.VERTICAL;
-//        c.ipadx = 300;
-//        c.ipady = 200;
-        mainDisplayPane.add(this.textContentPane, c);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(5, 5, 5, 5);
+        mainDisplayPane.add(this.testingInput, c);
         
         c = new GridBagConstraints();
         c.gridx = 1;
         c.gridy = 3;
+        c.gridwidth = 3;
+        c.gridheight = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(5, 5, 5, 5);
+        mainDisplayPane.add(this.respondingInput, c);
+        
+        c = new GridBagConstraints();
+        c.gridx = 4;
+        c.gridy = 3;
         c.gridwidth = 1;
-        c.gridheight = 2;
-        c.fill = GridBagConstraints.VERTICAL;
-//        c.ipadx = 300;
-//        c.ipady = 200;
+        c.gridheight = 1;
+        c.fill = GridBagConstraints.CENTER;
+        c.insets = new Insets(5, 5, 5, 5);
+        mainDisplayPane.add(this.trainButton, c);
+        
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 4;
+        c.gridwidth = 5;
+        c.gridheight = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(5, 5, 5, 5);
+        mainDisplayPane.add(this.trainPredict, c);
+        
+        c = new GridBagConstraints();
+        c.gridx = 1;
+        c.gridy = 5;
+        c.gridwidth = 3;
+        c.gridheight = 1;
+        c.ipady = 50;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(5, 5, 5, 5);
         mainDisplayPane.add(this.predictionField, c);
         
         c = new GridBagConstraints();
-        c.gridx = 2;
-        c.gridy = 0;
+        c.gridx = 4;
+        c.gridy = 5;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(5, 5, 5, 5);
+        mainDisplayPane.add(this.predictButton, c);
+
+        c = new GridBagConstraints();
+        c.gridx = 1;
+        c.gridy = 6;
         c.gridwidth = 1;
         c.gridheight = 1;
         mainDisplayPane.add(this.importModelFromFileButton, c);
 
-        c = new GridBagConstraints();
-        c.gridx = 2;
-        c.gridy = 1;
-        c.gridwidth = 1;
-        c.gridheight = 1;
-        c.insets = new Insets(50, 0, 0, 0);
-        mainDisplayPane.add(this.trainAction, c);
-
-        c = new GridBagConstraints();
-        c.gridx = 2;
-        c.gridy = 2;
-        c.gridwidth = 1;
-        c.gridheight = 1;
-        mainDisplayPane.add(this.predictButton, c);
-        
-        c = new GridBagConstraints();
-        c.gridx = 2;
-        c.gridy = 3;
-        c.gridwidth = 1;
-        c.gridheight = 1;
-        mainDisplayPane.add(this.outputButton, c);
-
-        c = new GridBagConstraints();
-        c.gridx = 2;
-        c.gridy = 4;
-        c.gridwidth = 1;
-        c.gridheight = 1;
-        mainDisplayPane.add(this.saveModelToFileButton, c);
-        
-        
         this.pack();
     }
 
@@ -195,8 +199,7 @@ public class MainViewDisplay extends JFrame {
             System.out.println("It is null");
             this.textContentField.setText("");
         } else {
-//            this.textContentField.setText(this.theBackendModel.theModel.console);
-              this.textContentField.setText(this.theBackendModel.theModel.consoleOutput);
+              this.predictionField.setText(this.theBackendModel.theModel.output);
         }
     }
     
@@ -204,10 +207,8 @@ public class MainViewDisplay extends JFrame {
         if (this.theBackendModel.theModel == null) {
             System.out.println("It is null");
         } else {
-//            this.textContentField.setText(this.theBackendModel.theModel.console);
-              this.theBackendModel.theModel.prediction = this.textContentField.getText();
+              this.theBackendModel.theModel.predict();
         }
-        System.out.println(this.theBackendModel.theModel.prediction);
     }
     
     void updateBackend() {
@@ -225,18 +226,26 @@ public class MainViewDisplay extends JFrame {
     }
 
     String showSaveDialog() {
+        JFileChooser jfc = new JFileChooser();
+        int status = jfc.showSaveDialog(this);
+        if (status == JFileChooser.APPROVE_OPTION) {
+            File theFile = jfc.getSelectedFile();
+            String thePath = theFile.getAbsolutePath();
+            return thePath;
+        }
+        
         return null;
-//      This method shows dialog in order to save the model, however,
-//      it might be preferable to simply save the model to the directory
-//      to make importing easier.
     }
 
     String showOpenDialog() {
-        return null;
-//      Will, by default, display the directory to which models are
-//      automatically saved to.
+        JFileChooser jfc = new JFileChooser();
+        int status = jfc.showOpenDialog(this);
+        if (status == JFileChooser.APPROVE_OPTION) {
+            File theFile = jfc.getCurrentDirectory();
+            String thePath = theFile.getAbsolutePath();
+            return thePath;
+        }
 
-//      However, the option will be available to import the model from 
-//      any specified directory.
+        return null;
     }
 }

@@ -5,15 +5,18 @@ import backend_models.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import static java.lang.Thread.sleep;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
+
 /**
  *
  * @author sam
@@ -29,6 +32,7 @@ public class ModelsAndViewsController {
         public void actionPerformed(ActionEvent ae) {
             try {
                 theBackendModel.theModel = new Model("");
+                theBackendModel.theModel.setPath(theMainViewDisplay.showOpenDialog());
             } catch (IOException ex) {
                 Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -50,20 +54,20 @@ public class ModelsAndViewsController {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
-            
-                if (theBackendModel.theModel == null) {
-                    System.out.println("Model is null");
-                    return;
-                }
-                
-                theMainViewDisplay.updateBackend();
 
-                theBackendModel.theModel.trainModel();
-      
+            try {
+                theBackendModel.theModel = new Model("");
+            } catch (IOException ex) {
+                Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            theMainViewDisplay.updateBackend();
+
+            theBackendModel.theModel.trainModel();
 
         }
     }
-    
+
     private class OutputAction implements ActionListener {
 
         @Override
@@ -71,21 +75,20 @@ public class ModelsAndViewsController {
             try {
 
                 String s = null;
-                            
-//                BufferedReader r = theBackendModel.theModel.console;
 
+//                BufferedReader r = theBackendModel.theModel.console;
                 System.out.println("Testing");
                 while (true) {
                     sleep(1000);
                     System.out.println("THIS IS IT");
 //                    while ((s = r.readLine()) != null) {
 //                        theBackendModel.theModel.output += s;
-                        theMainViewDisplay.updateTextContentField();
+                    theMainViewDisplay.updateTextContentField();
 //                        System.out.println(theBackendModel.theModel.cons);
 
 //                    }
                 }
-                
+
 //            } catch (IOException err) {
 //                System.out.println(err);
             } catch (InterruptedException ex) {
@@ -100,11 +103,20 @@ public class ModelsAndViewsController {
         @Override
         public void actionPerformed(ActionEvent ae) {
             if (theBackendModel.theModel == null) {
-                    System.out.println("Model is null");
-                    return;
+                System.out.println("Model is null");
+                return;
             }
             theMainViewDisplay.getPrediction();
             theBackendModel.theModel.predict();
+
+            try {
+                Scanner sc = new Scanner(new File("results.txt"));
+                theBackendModel.theModel.output = sc.nextLine();
+                System.out.println("Hath been attempted");
+                theMainViewDisplay.updateTextContentField();
+            } catch (IOException err) {
+                System.out.println(err);
+            }
         }
     }
 
@@ -126,14 +138,14 @@ public class ModelsAndViewsController {
 //      model to optimize its training.
         }
     }
-    
+
     private class ReadConsoleOutput implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
             try {
                 String s = null;
-                            
+
                 BufferedReader r = theBackendModel.theModel.console;
 
                 while ((s = r.readLine()) != null) {
@@ -155,7 +167,7 @@ public class ModelsAndViewsController {
     }
 
     private void initController() {
-        this.theMainViewDisplay.trainAction.addActionListener(new TrainAction());
+        this.theMainViewDisplay.trainButton.addActionListener(new TrainAction());
         this.theMainViewDisplay.outputButton.addActionListener(new OutputAction());
         this.theMainViewDisplay.importModelFromFileButton.addActionListener(new ImportModelAction());
         this.theMainViewDisplay.predictButton.addActionListener(new PredictAction());

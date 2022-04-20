@@ -1,5 +1,6 @@
 from numpy import float64
 import tensorflow as tf
+import sys
 
 sample = {
   'sex': 'male',	
@@ -32,7 +33,7 @@ def convert(lst):
 converted = convert(sample)
 print(converted)
 
-loaded_model = tf.keras.models.load_model('models\model')
+loaded_model = tf.keras.models.load_model(sys.argv[1])
 
 input_dict = {name: tf.convert_to_tensor([value]) for name, value in converted.items()}
 
@@ -43,3 +44,6 @@ print(
     "This person had a %.1f percent probability "
     "of surviving." % (100 * prob)
 )
+
+with open('results.txt', 'w') as f:
+    f.write("This person had a %.1f percent probability of surviving." % (100 * prob))

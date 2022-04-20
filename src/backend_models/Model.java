@@ -6,11 +6,15 @@
 package backend_models;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 /**
  *
@@ -57,12 +61,12 @@ public class Model extends Information {
 
         try  {
             
-            Files.write(Path.of("predict.txt"), Arrays.asList(this.prediction.split(",")));
+//            Files.write(Path.of("predict.txt"), Arrays.asList(this.prediction.split(",")));
         
             String s = null;
             
             ProcessBuilder builder = new ProcessBuilder(
-            "cmd.exe", "/c", ".\\venv\\Scripts\\activate && python predict.py");
+            "cmd.exe", "/c", ".\\venv\\Scripts\\activate && python predict.py " + super.getPath());
             builder.redirectErrorStream(true);
             Process p = builder.start();
                         
@@ -73,15 +77,22 @@ public class Model extends Information {
                 this.consoleOutput += s;
                 System.out.println(s);
             }
+
+//            System.out.println(sc.nextLine());
         } catch (IOException err) {
             System.out.println(err);
         }
     }
     
     public void fetchModels() {
-//      Identify if the user already has models 
-//      pretrained in this directory that they can 
-//      import.
+        Map<String, File> models = new HashMap<String, File>();
+        File modelDir = new File("/models");
+        for (File file : modelDir.listFiles()) {
+            if (file.isDirectory()) {
+                models.put(file.getName(), file);
+            }
+        }
+        
     }
     
     public void setVars(String[] vars) {

@@ -11,11 +11,7 @@ package backend_models;
  */
 public class Information {
     
-    public String training, testing, responding;
-        
-    public Information() {
-        
-    }
+    public String training, testing, responding, path;
     
     public void setTraining(String train) {
         this.training = train;
@@ -27,6 +23,10 @@ public class Information {
     
     public void setResponding(String responsive) {
         this.responding = responsive;
+    }
+    
+    public void setPath(String path) {
+        this.path = path;
     }
     
     public String getTraining() {
@@ -41,4 +41,7 @@ public class Information {
         return this.responding;
     }
     
+    public String getPath() {
+        return this.path;
+    }
 }
