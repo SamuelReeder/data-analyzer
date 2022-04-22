@@ -31,28 +31,6 @@ public class Model extends Information {
         this.consoleOutput = "";
     }
     
-    public void setup() {
-         try  {
-            String s = null;
-            
-            ProcessBuilder builder = new ProcessBuilder(
-            "cmd.exe", "/c", "python -m venv --system-site-packages .\\venv && .\\venv\\Scripts\\activate && pip install --upgrade pip && pip install -r requirements.txt");
-            builder.redirectErrorStream(true);
-            Process p = builder.start();
-                        
-            BufferedReader input = new BufferedReader(new 
-                 InputStreamReader(p.getInputStream()));
-            
-            while ((s = input.readLine()) != null) {
-                this.consoleOutput += s;
-                System.out.println(s);
-            }
-        }
-        catch (IOException err) {
-            System.out.println(err);
-        }
-    }
-    
     public void trainModel() {
         try  {
             String s = null;
@@ -66,7 +44,7 @@ public class Model extends Information {
                  InputStreamReader(p.getInputStream()));
             
             while ((s = input.readLine()) != null) {
-                this.consoleOutput += s;
+//                this.consoleOutput += s;
                 System.out.println(s);
             }
         }
@@ -97,7 +75,7 @@ public class Model extends Information {
                  InputStreamReader(p.getInputStream()));
             
             while ((s = input.readLine()) != null) {
-                this.consoleOutput += s;
+//                this.consoleOutput += s;
                 System.out.println(s);
             }
 

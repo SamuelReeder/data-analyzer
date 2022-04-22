@@ -4,8 +4,10 @@ import backend_models.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -90,12 +92,27 @@ public class ModelsAndViewsController {
             theInfoViewDisplay.setVisible(true);
         }
     }
-    
+
     private class SetupAction implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
-            theBackendModel.theModel.setup();
+            try {
+                String s = null;
+
+                ProcessBuilder builder = new ProcessBuilder(
+                        "cmd.exe", "/c", "python -m venv --system-site-packages .\\venv && .\\venv\\Scripts\\activate && pip install --upgrade pip && pip install -r requirements.txt");
+                builder.redirectErrorStream(true);
+                Process p = builder.start();
+
+                BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+                while ((s = input.readLine()) != null) {
+                    System.out.println(s);
+                }
+            } catch (IOException err) {
+                System.out.println(err);
+            }
         }
     }
 
