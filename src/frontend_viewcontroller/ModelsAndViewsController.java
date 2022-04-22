@@ -4,18 +4,11 @@ import backend_models.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import static java.lang.Thread.sleep;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JTextArea;
-import javax.swing.SwingWorker;
 
 /**
  *
@@ -68,36 +61,6 @@ public class ModelsAndViewsController {
         }
     }
 
-    private class OutputAction implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent ae) {
-            try {
-
-                String s = null;
-
-//                BufferedReader r = theBackendModel.theModel.console;
-                System.out.println("Testing");
-                while (true) {
-                    sleep(1000);
-                    System.out.println("THIS IS IT");
-//                    while ((s = r.readLine()) != null) {
-//                        theBackendModel.theModel.output += s;
-                    theMainViewDisplay.updateTextContentField();
-//                        System.out.println(theBackendModel.theModel.cons);
-
-//                    }
-                }
-
-//            } catch (IOException err) {
-//                System.out.println(err);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-        }
-    }
-
     private class PredictAction implements ActionListener {
 
         @Override
@@ -112,7 +75,6 @@ public class ModelsAndViewsController {
             try {
                 Scanner sc = new Scanner(new File("results.txt"));
                 theBackendModel.theModel.output = sc.nextLine();
-                System.out.println("Hath been attempted");
                 theMainViewDisplay.updateTextContentField();
             } catch (IOException err) {
                 System.out.println(err);
@@ -124,8 +86,16 @@ public class ModelsAndViewsController {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
-//      Will display a panel that provides a description of the
-//      software and how it generally works.
+            InfoViewDisplay theInfoViewDisplay = new InfoViewDisplay();
+            theInfoViewDisplay.setVisible(true);
+        }
+    }
+    
+    private class SetupAction implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            theBackendModel.theModel.setup();
         }
     }
 
@@ -139,27 +109,6 @@ public class ModelsAndViewsController {
         }
     }
 
-    private class ReadConsoleOutput implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent ae) {
-            try {
-                String s = null;
-
-                BufferedReader r = theBackendModel.theModel.console;
-
-                while ((s = r.readLine()) != null) {
-                    theBackendModel.theModel.output += s;
-                    theMainViewDisplay.updateTextContentField();
-
-                }
-
-            } catch (IOException err) {
-                System.out.println(err);
-            }
-        }
-    }
-
     public ModelsAndViewsController(BackendModelSetup aBackend, MainViewDisplay aMainViewDisplay) {
         this.theBackendModel = aBackend;
         this.theMainViewDisplay = aMainViewDisplay;
@@ -168,8 +117,9 @@ public class ModelsAndViewsController {
 
     private void initController() {
         this.theMainViewDisplay.trainButton.addActionListener(new TrainAction());
-        this.theMainViewDisplay.outputButton.addActionListener(new OutputAction());
         this.theMainViewDisplay.importModelFromFileButton.addActionListener(new ImportModelAction());
         this.theMainViewDisplay.predictButton.addActionListener(new PredictAction());
+        this.theMainViewDisplay.infoButton.addActionListener(new InfoAction());
+        this.theMainViewDisplay.setup.addActionListener(new SetupAction());
     }
 }

@@ -5,7 +5,6 @@ import backend_models.*;
 import java.awt.*;
 import java.io.*;
 import javax.swing.*;
-import javax.swing.border.EtchedBorder;
 
 /**
  *
@@ -16,9 +15,9 @@ public class MainViewDisplay extends JFrame {
     BackendModelSetup theBackendModel;
     
     JLabel textContentLabel;
-    JTextArea textContentField, predictionField;
+    JTextArea textContentField, predictionField, predictionInputField;
     
-    JButton infoButton, outputButton, predictButton, trainButton, saveModelToFileButton, importModelFromFileButton;
+    JButton infoButton, outputButton, predictButton, trainButton, saveModelToFileButton, importModelFromFileButton, setup;
     JTextField trainingInput, testingInput, respondingInput;
 
     JScrollPane textContentPane;
@@ -65,6 +64,12 @@ public class MainViewDisplay extends JFrame {
         this.predictionField.setEditable(true);
         this.predictionField.setWrapStyleWord(rootPaneCheckingEnabled);
         
+        this.predictionInputField = new JTextArea();
+        this.predictionInputField.setSize(250, 500);
+        this.predictionInputField.setLineWrap(true);
+        this.predictionInputField.setEditable(true);
+        this.predictionInputField.setWrapStyleWord(rootPaneCheckingEnabled);
+        
         this.importModelFromFileButton = new JButton();
         this.importModelFromFileButton.setText("Import Model");
 
@@ -76,12 +81,15 @@ public class MainViewDisplay extends JFrame {
         
         this.outputButton = new JButton();
         this.outputButton.setText("Output");
+        
+        this.setup = new JButton();
+        this.setup.setText("Setup");
 
         this.infoButton = new JButton();
         this.infoButton.setText("Info");
-        this.infoButton.setFocusPainted(false);
-        this.infoButton.setBackground(Color.BLUE);
-        this.infoButton.setForeground(Color.white);
+//        this.infoButton.setFocusPainted(false);
+//        this.infoButton.setBackground(Color.BLUE);
+//        this.infoButton.setForeground(Color.white);
 
         this.predictButton = new JButton();
         this.predictButton.setText("Predict");
@@ -167,13 +175,23 @@ public class MainViewDisplay extends JFrame {
         
         c = new GridBagConstraints();
         c.gridx = 1;
-        c.gridy = 5;
+        c.gridy = 6;
         c.gridwidth = 3;
         c.gridheight = 1;
         c.ipady = 50;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(5, 5, 5, 5);
         mainDisplayPane.add(this.predictionField, c);
+        
+        c = new GridBagConstraints();
+        c.gridx = 1;
+        c.gridy = 5;
+        c.gridwidth = 3;
+        c.gridheight = 1;
+        c.ipady = 50;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(5, 5, 5, 5);
+        mainDisplayPane.add(this.predictionInputField, c);
         
         c = new GridBagConstraints();
         c.gridx = 4;
@@ -185,11 +203,18 @@ public class MainViewDisplay extends JFrame {
         mainDisplayPane.add(this.predictButton, c);
 
         c = new GridBagConstraints();
-        c.gridx = 1;
-        c.gridy = 6;
+        c.gridx = 0;
+        c.gridy = 5;
         c.gridwidth = 1;
         c.gridheight = 1;
         mainDisplayPane.add(this.importModelFromFileButton, c);
+        
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 6;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        mainDisplayPane.add(this.setup, c);
 
         this.pack();
     }
@@ -207,7 +232,8 @@ public class MainViewDisplay extends JFrame {
         if (this.theBackendModel.theModel == null) {
             System.out.println("It is null");
         } else {
-              this.theBackendModel.theModel.predict();
+            System.out.println(this.predictionInputField.getText().trim());
+            this.theBackendModel.theModel.setPrediction(this.predictionInputField.getText().trim());
         }
     }
     
@@ -239,6 +265,7 @@ public class MainViewDisplay extends JFrame {
 
     String showOpenDialog() {
         JFileChooser jfc = new JFileChooser();
+        jfc.setCurrentDirectory(new File(System.getProperty("user.dir")));
         int status = jfc.showOpenDialog(this);
         if (status == JFileChooser.APPROVE_OPTION) {
             File theFile = jfc.getCurrentDirectory();

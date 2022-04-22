@@ -7,14 +7,12 @@ package backend_models;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 /**
  *
@@ -25,7 +23,6 @@ public class Model extends Information {
     public String path;
     public String consoleOutput;
     public String[] vars;
-    public BufferedReader console;
     public String output;
     public String prediction;
     
@@ -34,10 +31,32 @@ public class Model extends Information {
         this.consoleOutput = "";
     }
     
+    public void setup() {
+         try  {
+            String s = null;
+            
+            ProcessBuilder builder = new ProcessBuilder(
+            "cmd.exe", "/c", "python -m venv --system-site-packages .\\venv && .\\venv\\Scripts\\activate && pip install --upgrade pip && pip install -r requirements.txt");
+            builder.redirectErrorStream(true);
+            Process p = builder.start();
+                        
+            BufferedReader input = new BufferedReader(new 
+                 InputStreamReader(p.getInputStream()));
+            
+            while ((s = input.readLine()) != null) {
+                this.consoleOutput += s;
+                System.out.println(s);
+            }
+        }
+        catch (IOException err) {
+            System.out.println(err);
+        }
+    }
+    
     public void trainModel() {
-        String s = null;
-
         try  {
+            String s = null;
+            
             ProcessBuilder builder = new ProcessBuilder(
             "cmd.exe", "/c", ".\\venv\\Scripts\\activate && python main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getResponding());
             builder.redirectErrorStream(true);
@@ -57,12 +76,16 @@ public class Model extends Information {
     }
     
     public void predict() {
-        
-
         try  {
             
-//            Files.write(Path.of("predict.txt"), Arrays.asList(this.prediction.split(",")));
-        
+            FileWriter fw = new FileWriter("predict.txt");
+            PrintWriter pw = new PrintWriter(fw);
+            
+            pw.print(super.getPrediction());
+            
+            fw.close();
+            pw.close();
+            
             String s = null;
             
             ProcessBuilder builder = new ProcessBuilder(
@@ -78,7 +101,6 @@ public class Model extends Information {
                 System.out.println(s);
             }
 
-//            System.out.println(sc.nextLine());
         } catch (IOException err) {
             System.out.println(err);
         }
