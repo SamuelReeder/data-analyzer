@@ -1,7 +1,7 @@
 models/
 
-results.txt
-predict.txt
+/predict.txt
+/results.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
