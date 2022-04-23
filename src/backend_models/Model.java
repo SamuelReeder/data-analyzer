@@ -27,14 +27,24 @@ public class Model extends Information {
     public String prediction;
 
     public Model(String path) throws IOException {
+        
+        
         this.path = path;
         this.consoleOutput = "";
     }
 
     public void trainModel() {
 
-        String args = ".\\venv\\Scripts\\activate && python main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getResponding();
-        Python.run(args);
+        String args;
+        if (super.getIsWindows()) {
+            args = ".\\venv\\Scripts\\activate && python main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getResponding();
+        } else {
+            args = "source ./venv/bin/activate && python3 main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getResponding();
+        } 
+        
+        Python.setResponsive(super.getResponding());
+        
+        Python.run(args, super.getIsWindows());
     }
 
     public void predict() {
@@ -46,23 +56,21 @@ public class Model extends Information {
 
         fw.close();
         pw.close();
-
-        String args = ".\\venv\\Scripts\\activate && python predict.py " + super.getPath();
-        Python.run(args);
+        
+        String args;
+        if (super.getIsWindows()) {
+            args = ".\\venv\\Scripts\\activate && python predict.py " + super.getPath();
+        } else {
+            args = "source ./venv/bin/activate && python3 predict.py" + super.getPath();
+        } 
+        Python.run(args, super.getIsWindows());
         } catch (IOException err) {
             System.out.println(err);
         }
     }
 
     public void fetchModels() {
-//        Map<String, File> models = new HashMap<String, File>();
-//        File modelDir = new File("/models");
-//        for (File file : modelDir.listFiles()) {
-//            if (file.isDirectory()) {
-//                models.put(file.getName(), file);
-//            }
-//        }
-
+        
     }
 
     public void setVars(String[] vars) {
@@ -82,5 +90,10 @@ public class Model extends Information {
     public static String importModel(String path) throws IOException {
 //      Imports a specific model to be used
         return "";
+    }
+    
+        
+    public String getResponsive() {
+        return Python.getResponsive();
     }
 }

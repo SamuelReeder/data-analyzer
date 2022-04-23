@@ -76,7 +76,7 @@ public class ModelsAndViewsController {
 
             try {
                 Scanner sc = new Scanner(new File("results.txt"));
-                theBackendModel.theModel.output = sc.nextLine();
+                theBackendModel.theModel.output = "Variable: "  + (theBackendModel.theModel.getResponsive() != null ? theBackendModel.theModel.getResponsive() : "unknown") + ", has a " + sc.nextLine() + "% probability.";
                 theMainViewDisplay.updateTextContentField();
             } catch (IOException err) {
                 System.out.println(err);
@@ -97,8 +97,19 @@ public class ModelsAndViewsController {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
-            String args = "python -m venv .\\venv && .\\venv\\Scripts\\activate && pip install --upgrade pip && pip install -r requirements.txt";
-            Python.run(args);
+             try {
+                theBackendModel.theModel = new Model("");
+            } catch (IOException ex) {
+                Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+             
+            String args;
+            if (theBackendModel.theModel.getIsWindows()) {
+                args = "python -m venv .\\venv && .\\venv\\Scripts\\activate && pip install --upgrade pip && pip install -r requirements.txt";;
+            } else {
+                args = "python3 -m venv ./venv && source ./venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt";
+            }
+            Python.run(args, theBackendModel.theModel.getIsWindows());
         }
     }
 

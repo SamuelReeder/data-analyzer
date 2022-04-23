@@ -11,7 +11,18 @@ package backend_models;
  */
 public class Information {
     
-    public String training, testing, responding, path, prediction;
+    private String training, testing, responding, path, prediction;
+    
+    private boolean isWindows;
+    
+    public Information() {
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            this.isWindows = true;
+        } else {
+            this.isWindows = false;
+        }
+//this.isWindows = false;
+    }
     
     public void setTraining(String train) {
         this.training = train;
@@ -51,5 +62,9 @@ public class Information {
     
     public String getPrediction() {
         return this.prediction;
+    }
+    
+    public boolean getIsWindows() {
+        return this.isWindows;
     }
 }

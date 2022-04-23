@@ -40,10 +40,5 @@ input_dict = {name: tf.convert_to_tensor([value]) for name, value in converted.i
 predict = loaded_model.predict(input_dict)
 prob = tf.nn.sigmoid(predict[0])
 
-print(
-    "This person had a %.1f percent probability "
-    "of surviving." % (100 * prob)
-)
-
 with open('results.txt', 'w+') as f:
-    f.write("This person had a %.1f percent probability of surviving." % (100 * prob))
+    f.write("%.1f" % (100 * prob))

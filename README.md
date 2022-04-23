@@ -1,10 +1,10 @@
 # Data Analyzer
 
 Getting started:
-Ensure Python is installed, this software was built on Python 3.10.
+Ensure Python is installed and added to PATH, this software was built on Python 3.10.
 
 ##### Compatibility
-Only tested on Windows 10. Should hypothetically be compatible with Linux and MacOS.
+Only tested on Windows 10. May not work on Linux or MacOS (yet).
 
 ##### Setup
 The software will automaticallly install all required dependencies using the "setup" button in the GUI.
@@ -54,6 +54,6 @@ The format is:
 > 
 And so forth... as can be seen in the above example. Feel free to change the values however you desire; assuming the type remains the same.
 
-Then, import the model you previously trained by navigating to /models/model/ within the project directory and selecting a file.
+Important: import the model you previously trained by navigating to /models/model/ within the project directory and selecting any file.
 
 Now, you are ready to press "Predict". Do so and witness the model make a prediction based on this simple data.

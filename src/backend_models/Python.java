@@ -14,7 +14,19 @@ import java.io.InputStreamReader;
  */
 public class Python {
     
-    public static void run(String args) {
+    private static String responsive;
+    
+    public static void run(String args, boolean isWindows) {
+        
+        String shell;
+        String dir;
+        if (isWindows) {
+            shell = "cmd.exe";
+            dir = "/c";
+        } else {
+            shell = "bash";
+            dir = "-c";
+        }
         try  {
             String s = null;
             
@@ -34,5 +46,13 @@ public class Python {
         catch (IOException err) {
             System.out.println(err);
         }
+    }
+    
+    public static void setResponsive(String var) {
+        Python.responsive = var;
+    }
+    
+    public static String getResponsive() {
+        return Python.responsive;
     }
 }
