@@ -97,22 +97,8 @@ public class ModelsAndViewsController {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
-            try {
-                String s = null;
-
-                ProcessBuilder builder = new ProcessBuilder(
-                        "cmd.exe", "/c", "python -m venv --system-site-packages .\\venv && .\\venv\\Scripts\\activate && pip install --upgrade pip && pip install -r requirements.txt");
-                builder.redirectErrorStream(true);
-                Process p = builder.start();
-
-                BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-                while ((s = input.readLine()) != null) {
-                    System.out.println(s);
-                }
-            } catch (IOException err) {
-                System.out.println(err);
-            }
+            String args = "python -m venv .\\venv && .\\venv\\Scripts\\activate && pip install --upgrade pip && pip install -r requirements.txt";
+            Python.run(args);
         }
     }
 

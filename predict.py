@@ -45,5 +45,5 @@ print(
     "of surviving." % (100 * prob)
 )
 
-with open('results.txt', 'w') as f:
+with open('results.txt', 'w+') as f:
     f.write("This person had a %.1f percent probability of surviving." % (100 * prob))

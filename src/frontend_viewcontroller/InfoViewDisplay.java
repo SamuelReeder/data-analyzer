@@ -23,7 +23,7 @@ public class InfoViewDisplay extends JFrame {
     }
     
     private void initComponents() {
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         
         Container infoDisplayPane = this.getContentPane();
         infoDisplayPane.setLayout(new GridBagLayout());

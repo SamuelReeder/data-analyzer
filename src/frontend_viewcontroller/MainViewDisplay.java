@@ -37,7 +37,7 @@ public class MainViewDisplay extends JFrame {
         
         GridBagConstraints c;
         
-        this.setMinimumSize(new Dimension(400, 400));
+        this.setMinimumSize(new Dimension(400, 600));
 
         this.trainingInput = new JTextField();
         this.trainingInput.setToolTipText("Provide URL or path to training dataset");
@@ -61,7 +61,7 @@ public class MainViewDisplay extends JFrame {
         this.predictionField = new JTextArea();
         this.predictionField.setSize(250, 500);
         this.predictionField.setLineWrap(true);
-        this.predictionField.setEditable(true);
+        this.predictionField.setEditable(false);
         this.predictionField.setWrapStyleWord(rootPaneCheckingEnabled);
         
         this.predictionInputField = new JTextArea();

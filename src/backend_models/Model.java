@@ -25,87 +25,56 @@ public class Model extends Information {
     public String[] vars;
     public String output;
     public String prediction;
-    
+
     public Model(String path) throws IOException {
         this.path = path;
         this.consoleOutput = "";
     }
-    
-    public void trainModel() {
-        try  {
-            String s = null;
-            
-            ProcessBuilder builder = new ProcessBuilder(
-            "cmd.exe", "/c", ".\\venv\\Scripts\\activate && python main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getResponding());
-            builder.redirectErrorStream(true);
-            Process p = builder.start();
-                        
-            BufferedReader input = new BufferedReader(new 
-                 InputStreamReader(p.getInputStream()));
-            
-            while ((s = input.readLine()) != null) {
-//                this.consoleOutput += s;
-                System.out.println(s);
-            }
-        }
-        catch (IOException err) {
-            System.out.println(err);
-        }
-    }
-    
-    public void predict() {
-        try  {
-            
-            FileWriter fw = new FileWriter("predict.txt");
-            PrintWriter pw = new PrintWriter(fw);
-            
-            pw.print(super.getPrediction());
-            
-            fw.close();
-            pw.close();
-            
-            String s = null;
-            
-            ProcessBuilder builder = new ProcessBuilder(
-            "cmd.exe", "/c", ".\\venv\\Scripts\\activate && python predict.py " + super.getPath());
-            builder.redirectErrorStream(true);
-            Process p = builder.start();
-                        
-            BufferedReader input = new BufferedReader(new 
-                 InputStreamReader(p.getInputStream()));
-            
-            while ((s = input.readLine()) != null) {
-//                this.consoleOutput += s;
-                System.out.println(s);
-            }
 
+    public void trainModel() {
+
+        String args = ".\\venv\\Scripts\\activate && python main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getResponding();
+        Python.run(args);
+    }
+
+    public void predict() {
+        try {
+        FileWriter fw = new FileWriter("predict.txt");
+        PrintWriter pw = new PrintWriter(fw);
+
+        pw.print(super.getPrediction());
+
+        fw.close();
+        pw.close();
+
+        String args = ".\\venv\\Scripts\\activate && python predict.py " + super.getPath();
+        Python.run(args);
         } catch (IOException err) {
             System.out.println(err);
         }
     }
-    
+
     public void fetchModels() {
-        Map<String, File> models = new HashMap<String, File>();
-        File modelDir = new File("/models");
-        for (File file : modelDir.listFiles()) {
-            if (file.isDirectory()) {
-                models.put(file.getName(), file);
-            }
-        }
-        
+//        Map<String, File> models = new HashMap<String, File>();
+//        File modelDir = new File("/models");
+//        for (File file : modelDir.listFiles()) {
+//            if (file.isDirectory()) {
+//                models.put(file.getName(), file);
+//            }
+//        }
+
     }
-    
+
     public void setVars(String[] vars) {
 //      Sets the responding variables of the data
     }
-    
+
     public String[] getVars() {
 //      A method to access relevant variables   
         return this.vars;
     }
-    
+
 //    The above methods are very general, I would like to implement others that have more specific use cases too
-    
     public void saveModel(String path) throws IOException {
 //      Saves model by calling a python function
     }

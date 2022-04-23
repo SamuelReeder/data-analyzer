@@ -1,5 +1,5 @@
 venv:
-	python -m venv --system-site-packages .\venv
+	python -m venv .\venv
 
 start:
 	.\venv\Scripts\activate

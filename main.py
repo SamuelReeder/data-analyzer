@@ -1,34 +1,14 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import sys
-# from matplotlib import testing
 import tensorflow as tf
-import numpy as np
 import preprocessing as p
-import csvdata as data
 from tensorflow.keras import layers
-
-np.set_printoptions(precision=3, suppress=True)
-
-print('0 is ' + str(sys.argv[0]))
-print('1 is ' + str(sys.argv[1]))
-print('2 is ' + str(sys.argv[2]))
-print('3 is ' + str(sys.argv[3]))
 
 training = sys.argv[1]
 testing = ''
 if sys.argv[2] != 'none':
     testing = sys.argv[2]
-
-print('test', testing)
-print('train', training)
-
-# training = 'https://storage.googleapis.com/tf-datasets/titanic/train.csv'
-# testing = 'https://storage.googleapis.com/tf-datasets/titanic/eval.csv'
-
-# training = 'C:/Users/samue/Downloads/archive/The Top Billionaires.csv'
-# testing = 'C:/Users/samue/Downloads/archive/The Top Billionaires.csv'
-# csv = data.CSVData(training, testing, False)
 
 d = p.PreProcessing(sys.argv[3], training, testing, False)
 

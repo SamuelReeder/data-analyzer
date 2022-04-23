@@ -1,12 +1,7 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-from unicodedata import numeric
-
 import csvdata as csv
 
 import tensorflow as tf
 import numpy as np
-from IPython.display import clear_output
-# import six.moves
 from tensorflow.keras import layers
 
 class PreProcessing (csv.CSVData):
