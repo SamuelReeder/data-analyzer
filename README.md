@@ -3,13 +3,13 @@
 Getting started:
 Ensure Python is installed and added to PATH, this software was built on Python 3.10.
 
-##### Compatibility
+### Compatibility
 Only tested on Windows 10. May not work on Linux or MacOS (yet).
 
-##### Setup
+### Setup
 The software will automaticallly install all required dependencies using the "setup" button in the GUI.
 
-##### Training
+### Training
 Input the following text into the top three text fields respectively:
 
 ```sh
@@ -27,7 +27,7 @@ Click the "Train" button, and await a notice of completion in the Netbeans outpu
 
 The program is not optimized to work with virtually any dataset yet. So far, compatible data will only have 1 responsive variable with exactly two possible outputs. The dataset linked above is conveniently provided by TensorFlow for testing.
 
-##### Predictions
+### Predictions
 Input the following into the top box in the prediction section:  
 sex  
 female  
