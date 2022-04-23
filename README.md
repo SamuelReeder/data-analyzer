@@ -29,24 +29,24 @@ The program is not optimized to work with virtually any dataset yet. So far, com
 
 ##### Predictions
 Input the following into the top box in the prediction section:
-sex
-female
-age 
-19
-n_siblings_spouses 
-1
-parch 
-0
-fare
-8.72
-class
-first
-deck
-unknown
-embark_town
-Southampton
-alone
-n
+sex  
+female  
+age   
+19  
+n_siblings_spouses   
+1  
+parch   
+0  
+fare  
+8.72  
+class  
+first  
+deck  
+unknown  
+embark_town  
+Southampton   
+alone  
+n  
 
 The format is:
 > key
