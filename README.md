@@ -28,7 +28,7 @@ Click the "Train" button, and await a notice of completion in the Netbeans outpu
 The program is not optimized to work with virtually any dataset yet. So far, compatible data will only have 1 responsive variable with exactly two possible outputs. The dataset linked above is conveniently provided by TensorFlow for testing.
 
 ##### Predictions
-Input the following into the top box in the prediction section:
+Input the following into the top box in the prediction section:  
 sex  
 female  
 age   
@@ -49,10 +49,9 @@ alone
 n  
 
 The format is:
-> key
-> 
-> value
-> 
+key
+value  
+
 And so forth... as can be seen in the above example. Feel free to change the values however you desire; assuming the type remains the same.
 
 Important: import the model you previously trained by navigating to /models/model/ within the project directory and selecting any file.
