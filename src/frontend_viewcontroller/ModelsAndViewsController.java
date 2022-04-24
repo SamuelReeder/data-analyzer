@@ -109,6 +109,8 @@ public class ModelsAndViewsController {
             } else {
                 args = "python3 -m venv ./venv && source ./venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt";
             }
+            
+            System.out.println(args);
             Python.run(args, theBackendModel.theModel.getIsWindows());
         }
     }

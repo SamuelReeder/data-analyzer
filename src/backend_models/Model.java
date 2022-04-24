@@ -42,6 +42,8 @@ public class Model extends Information {
             args = "source ./venv/bin/activate && python3 main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getResponding();
         } 
         
+        System.out.println(args);
+        
         Python.setResponsive(super.getResponding());
         
         Python.run(args, super.getIsWindows());
@@ -61,8 +63,11 @@ public class Model extends Information {
         if (super.getIsWindows()) {
             args = ".\\venv\\Scripts\\activate && python predict.py " + super.getPath();
         } else {
-            args = "source ./venv/bin/activate && python3 predict.py" + super.getPath();
+            args = "source ./venv/bin/activate && python3 predict.py " + super.getPath().replace("\\", "/");
         } 
+        
+        System.out.println(args);
+
         Python.run(args, super.getIsWindows());
         } catch (IOException err) {
             System.out.println(err);
