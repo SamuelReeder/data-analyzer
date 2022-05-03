@@ -10,7 +10,15 @@ testing = ''
 if sys.argv[2] != 'none':
     testing = sys.argv[2]
 
-d = p.PreProcessing(sys.argv[3], training, testing, False)
+responsive = sys.argv[3]
+
+if len(sys.argv) > 4:
+    responsive = []
+    for i in len(sys.argv) - 3:
+        responsive[i] = sys.argv[i + 3]
+
+
+d = p.PreProcessing(responsive, training, testing, False)
 
 inputs, numeric_inputs = d.defineInput()
 
@@ -27,7 +35,7 @@ test_features_dict, test_feat_dict = d.defineFeaturesDict(d.test_features)
 def model(preprocessing_head, inputs):
   body = tf.keras.Sequential([
     layers.Dense(64),
-    layers.Dense(1)
+    layers.Dense(len(responsive))
   ])
 
   preprocessed_inputs = preprocessing_head(inputs)

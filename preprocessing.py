@@ -1,3 +1,4 @@
+from array import array
 import csvdata as csv
 
 import tensorflow as tf
@@ -14,8 +15,10 @@ class PreProcessing (csv.CSVData):
         self.train = self.get_train()
         self.test = self.get_test()
         self.features = self.train.copy()
+
         print('responsive', responding)
-        self.labels = self.features.pop(responding) 
+        self.labels = self.defineResponding(responding)
+        self.defineResponding(responding)
         self.test_features = self.test.copy()
 
     def convertToTensor(self):
@@ -65,4 +68,7 @@ class PreProcessing (csv.CSVData):
                  for name, value in features.items()}
         lower_dimension_dict =  {name:values[:1] for name, values in temp_dict.items()}
         return temp_dict, lower_dimension_dict
+
+    def setAlgorithym(self):
+        # determine whether a responsive column will use linear regression or classification because 
 

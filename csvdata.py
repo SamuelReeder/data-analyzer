@@ -1,3 +1,4 @@
+from array import array
 import pandas as pd
 import numpy as np
 
@@ -62,4 +63,10 @@ class CSVData:
                 else:
                     self.num_cols.append(columnName)
 
-            print(type(columnData[1]))            
+            print(type(columnData[1]))      
+
+    def defineResponding(self, responding):
+        if type(responding) is array:
+            return pd.concat([self.features.pop(i) for i in responding], axis=1) 
+        return responding
+             
