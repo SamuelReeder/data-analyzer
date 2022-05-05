@@ -16,6 +16,8 @@ class PreProcessing (csv.CSVData):
         self.test = self.get_test()
         self.features = self.train.copy()
 
+        self.responding = responding
+
         print('responsive', responding)
         self.labels = self.defineResponding(responding)
         self.defineResponding(responding)
@@ -69,6 +71,20 @@ class PreProcessing (csv.CSVData):
         lower_dimension_dict =  {name:values[:1] for name, values in temp_dict.items()}
         return temp_dict, lower_dimension_dict
 
-    def setAlgorithym(self):
-        # determine whether a responsive column will use linear regression or classification because 
+    # def setAlgorithym(self):
+    #     self.inputs = {}
+    #     for name, column in self.features.items():
+    #         dtype = column.dtype
+    #         if dtype == object:
+    #             dtype = tf.string
+    #         else:
+    #             dtype = tf.float32
+
+    #         self.inputs[name] = tf.keras.Input(shape=(1,), name=name, dtype=dtype)
+
+    #     self.numeric_inputs = {name:input for name,input in self.inputs.items()
+    #               if input.dtype==tf.float32}
+
+    #     return self.inputs, self.numeric_inputs
+
 

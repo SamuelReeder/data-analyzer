@@ -30,7 +30,7 @@ public class Python {
         try  {
             String s = null;
             
-            ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", args);
+            ProcessBuilder builder = new ProcessBuilder(shell, dir, args);
             builder.redirectErrorStream(true);
             Process p = builder.start();
                         

@@ -66,6 +66,7 @@ class CSVData:
             print(type(columnData[1]))      
 
     def defineResponding(self, responding):
+        print("responding is occuring")
         if type(responding) is array:
             return pd.concat([self.features.pop(i) for i in responding], axis=1) 
         return responding
