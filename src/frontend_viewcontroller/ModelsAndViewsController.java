@@ -124,6 +124,16 @@ public class ModelsAndViewsController {
 //      model to optimize its training.
         }
     }
+    
+//    private class OrderAction implements ActionListener {
+//
+//        @Override
+//        public void actionPerformed(ActionEvent ae) {
+////            String petName = theMainViewDisplay.dropdownMenu.getSelectedItem();
+//              theMainViewDisplay.dropdownMenu.
+////            updateLabel(petName);
+//        }
+//    }
 
     public ModelsAndViewsController(BackendModelSetup aBackend, MainViewDisplay aMainViewDisplay) {
         this.theBackendModel = aBackend;
@@ -137,5 +147,6 @@ public class ModelsAndViewsController {
         this.theMainViewDisplay.predictButton.addActionListener(new PredictAction());
         this.theMainViewDisplay.infoButton.addActionListener(new InfoAction());
         this.theMainViewDisplay.setup.addActionListener(new SetupAction());
+//        this.theMainViewDisplay.dropdownMenu.addActionListener(new OrderAction());
     }
 }

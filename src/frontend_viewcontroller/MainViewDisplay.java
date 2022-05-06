@@ -24,6 +24,8 @@ public class MainViewDisplay extends JFrame {
     
     JSeparator trainPredict;
     
+    JComboBox dropdownMenu;
+    
     public MainViewDisplay(BackendModelSetup aBackend) {
         this.theBackendModel = aBackend;
         this.initComponents();
@@ -100,6 +102,11 @@ public class MainViewDisplay extends JFrame {
         this.trainPredict = new JSeparator();
         this.trainPredict.setOrientation(SwingConstants.HORIZONTAL);
 
+        this.dropdownMenu = new JComboBox();
+//        this.dropdownMenu.setEditable(rootPaneCheckingEnabled);
+        this.dropdownMenu.addItem(1);
+        this.dropdownMenu.addItem(2);
+        this.dropdownMenu.addItem(3);
 
         /*
          * Choose your LayoutManager for the mainDisplayPane here. See:
@@ -149,7 +156,16 @@ public class MainViewDisplay extends JFrame {
         c = new GridBagConstraints();
         c.gridx = 1;
         c.gridy = 3;
-        c.gridwidth = 3;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(5, 5, 5, 5);
+        mainDisplayPane.add(this.dropdownMenu, c);
+        
+        c = new GridBagConstraints();
+        c.gridx = 2;
+        c.gridy = 3;
+        c.gridwidth = 2;
         c.gridheight = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(5, 5, 5, 5);
