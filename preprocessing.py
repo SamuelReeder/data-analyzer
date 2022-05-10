@@ -21,10 +21,10 @@ class PreProcessing (csv.CSVData):
     def convertToTensor(self):
         return
 
-    def defineInput(self):
+    def defineInput(self, responding):
 
         self.inputs = {}
-        for name, column in self.features.items():
+        for name, column in self.train.items() if responding else self.features.items():
             dtype = column.dtype
             if dtype == object:
                 dtype = tf.string
