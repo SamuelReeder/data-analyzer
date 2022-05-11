@@ -1,4 +1,5 @@
 import csvdata as csv
+import enum
 
 import tensorflow as tf
 import numpy as np
@@ -7,16 +8,19 @@ from tensorflow.keras import layers
 class PreProcessing (csv.CSVData):
 
     def __init__(self, responding, train, test, together):
-        # self.data = data
 
         csv.CSVData.__init__(self, train, test, together)
 
         self.train = self.get_train()
         self.test = self.get_test()
         self.features = self.train.copy()
-        print('responsive', responding)
+        # for columnName, columnaData in self.features.iteritems():
+        #     print("Wassup", columnName)
+        #     print("data", columnaData)
+
         self.labels = self.features.pop(responding) 
         self.test_features = self.test.copy()
+        self.test_labels = self.test_features.pop(responding)
 
     def convertToTensor(self):
         return
@@ -66,3 +70,15 @@ class PreProcessing (csv.CSVData):
         lower_dimension_dict =  {name:values[:1] for name, values in temp_dict.items()}
         return temp_dict, lower_dimension_dict
 
+    def isItClassification(self, col):
+        vals = []
+        for i in self.train[col]:
+            try:
+                if vals.index(i):
+                    continue
+            except ValueError:
+                vals.append(i)
+
+        if len(vals) < len(self.train[col]) / 4:
+            return True
+        return False  

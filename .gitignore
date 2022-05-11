@@ -3,6 +3,8 @@ models/
 /predict.txt
 /results.txt
 
+sample_preds.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

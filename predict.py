@@ -2,18 +2,7 @@ from numpy import float64
 import tensorflow as tf
 import sys
 
-sample = {
-  'sex': 'male',	
-  'age': 34,
-  'n_siblings_spouses': 1,
-  'parch': 0,
-  'fare': 7.25,	
-  'class': 'third',	
-  'deck': 'unknown',
-  'embark_town': 'Southampton',
-  'alone': 'n'
-
-}
+sample = {}
 
 with open('predict.txt') as f:
     if f.readable:
@@ -33,7 +22,10 @@ def convert(lst):
 converted = convert(sample)
 print(converted)
 
-loaded_model = tf.keras.models.load_model(sys.argv[1])
+# loaded_model = tf.keras.models.load_model(sys.argv[1])
+
+loaded_model = tf.keras.models.load_model('models/dnn_model')
+
 
 input_dict = {name: tf.convert_to_tensor([value]) for name, value in converted.items()}
 

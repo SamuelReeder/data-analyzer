@@ -3,57 +3,120 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import sys
 import tensorflow as tf
 import preprocessing as p
+import numpy as np
 from tensorflow.keras import layers
 
+# class CustomModel():
+#   def __init__(self) -> None:
+      
 # training = sys.argv[1]
 # testing = ''
 # if sys.argv[2] != 'none':
 #     testing = sys.argv[2]
 
-# responsive = sys.argv[3]
+# alg = sys.argv[3]
 
-# if len(sys.argv) > 4:
+# responsive = sys.argv[4]
+
+# if len(sys.argv) > 5:
 #     responsive = []
-#     for i in len(sys.argv) - 3:
-#         responsive[i] = sys.argv[i + 3]
+#     for i in len(sys.argv) - 4:
+#         responsive[i] = sys.argv[i + 4]
 
-training = 'https://storage.googleapis.com/tf-datasets/titanic/train.csv'
-testing = 'https://storage.googleapis.com/tf-datasets/titanic/eval.csv'
+# training = 'https://storage.googleapis.com/tf-datasets/titanic/train.csv'
+# testing = 'https://storage.googleapis.com/tf-datasets/titanic/eval.csv'
 
-responsive = "survived"
+training = "http://archive.ics.uci.edu/ml/machine-learning-databases/auto-mpg/auto-mpg.data"
+testing = ""
 
-d = p.PreProcessing(responsive, training, testing, False)
+responsive = "MPG"
+
+alg = "opt"
+
+d = p.PreProcessing(responsive, training, testing, True)
 
 inputs, numeric_inputs = d.defineInput(False)
 
-preprocessed_inputs = d.preprocess()
+r_inputs, r_numeric_inputs = d.defineInput(True)
 
-preprocessing = tf.keras.Model(inputs, preprocessed_inputs)
+print(d.isItClassification(responsive))
 
-features_dict, feat_dict = d.defineFeaturesDict(d.features)
+def trainClassificationNeuralNet():
+  preprocessed_inputs = d.preprocess()
 
-preprocessing(feat_dict)
+  preprocessing = tf.keras.Model(inputs, preprocessed_inputs)
 
-test_features_dict, test_feat_dict = d.defineFeaturesDict(d.test_features)
+  features_dict, feat_dict = d.defineFeaturesDict(d.features)
 
-def model(preprocessing_head, inputs):
-  body = tf.keras.Sequential([
-    layers.Dense(64),
-    layers.Dense(1)
+  preprocessing(feat_dict)
+
+  test_features_dict, test_feat_dict = d.defineFeaturesDict(d.test_features)
+
+  def model(preprocessing_head, inputs):
+    body = tf.keras.Sequential([
+      layers.Dense(64),
+      layers.Dense(1)
+    ])
+
+    preprocessed_inputs = preprocessing_head(inputs)
+    result = body(preprocessed_inputs)
+    temp_model = tf.keras.Model(inputs, result)
+
+    temp_model.compile(loss=tf.losses.BinaryCrossentropy(from_logits=True),
+                  optimizer=tf.optimizers.Adam())
+    return temp_model
+
+  model = model(preprocessing, inputs)
+  model.fit(x=features_dict, y=d.labels, epochs=10)
+
+  results = model.evaluate(x=features_dict, y=d.labels, batch_size=128)
+  print(results)
+
+  model.save('models/model')
+
+def build_and_compile_model(norm):
+  model = tf.keras.Sequential([
+      norm,
+      layers.Dense(64, activation='relu'),
+      layers.Dense(64, activation='relu'),
+      layers.Dense(1)
   ])
 
-  preprocessed_inputs = preprocessing_head(inputs)
-  result = body(preprocessed_inputs)
-  temp_model = tf.keras.Model(inputs, result)
+  model.compile(loss='mean_absolute_error',
+                optimizer=tf.keras.optimizers.Adam(0.001))
+  return model
 
-  temp_model.compile(loss=tf.losses.BinaryCrossentropy(from_logits=True),
-                optimizer=tf.optimizers.Adam())
-  return temp_model
 
-model = model(preprocessing, inputs)
-model.fit(x=features_dict, y=d.labels, epochs=10)
+def trainRegressionNeuralNet():
+  normalizer = tf.keras.layers.Normalization(axis=-1)
+  normalizer.adapt(np.array(d.features))
 
-results = model.evaluate(x=features_dict, y=d.labels, batch_size=128)
-print(results)
+  dnn_model = build_and_compile_model(normalizer)
+  
+  history = dnn_model.fit(
+    d.features,
+    d.labels,
+    validation_split=0.2,
+    verbose=0, epochs=100)
+  
+  test_results = {}
 
-model.save('models/model')
+  test_results['dnn_model'] = dnn_model.evaluate(d.test_features, d.test_labels, verbose=0)
+
+  test = 5
+  print(d.test[:test])
+  print(d.test_features[:test])
+
+  test_predictions = dnn_model.predict(d.test_features[:test])
+
+  print(test_predictions)
+
+  dnn_model.save('models/dnn_model')
+
+
+
+if r_inputs[responsive].dtype == 'float32' and (alg == 'regress' or alg == 'opt') and not d.isItClassification(responsive):
+  print("Hey wassup")
+  trainRegressionNeuralNet()
+else:
+  trainClassificationNeuralNet()

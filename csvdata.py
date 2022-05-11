@@ -6,17 +6,22 @@ from pandas.api.types import is_numeric_dtype
 
 
 class CSVData:
-    # Various methods to obtain vital information about the dataset
-    # This info will be, in part, used to define the optimal parameters of the neural network, including:
-    #   - density of the layers
-    #   - amount of possible prediction outputs
-    def __init__(self, train, test, together):
-        self.train = pd.read_csv(train)
-        self.test = pd.read_csv(test)
-        self.text_cols = []
-        self.num_cols = []
-        self.together = together
 
+    def __init__(self, train, test, together):
+        column_names = ['MPG', 'Cylinders', 'Displacement', 'Horsepower', 'Weight',
+                'Acceleration', 'Model Year', 'Origin']
+        if not together:
+            self.train = pd.read_csv(train)
+            self.test = pd.read_csv(test)
+        else:
+            data = pd.read_csv(train, names=column_names,
+                          na_values='?', comment='\t',
+                          sep=' ', skipinitialspace=True)
+            data.isna().sum()
+            data = data.dropna()
+            self.train = data.sample(frac=0.8, random_state=0)
+            self.test = data.drop(self.train.index)
+            
     def get_features(self):
         return self.train.shape[1]
 
@@ -37,29 +42,3 @@ class CSVData:
 
     def get_num_cols(self):
         return self.num_cols
-
-    def define_columns(self):
-        for (columnName, columnData) in self.train.iteritems():
-            
-            text = []
-
-            if type(columnData[1]) is str:
-                self.text_cols.append(columnName)
-                continue
-            elif type(columnData[1]) is np.float64:
-                self.num_cols.append(columnName)
-                continue
-            else:
-                for values in columnData:
-                    try:
-                        check = text.index(values)
-                    except ValueError:
-                        text.append(values)
-
-                # divided by arbitrary number 
-                if len(text) < len(columnData) / 4:
-                    self.text_cols.append(columnName)
-                else:
-                    self.num_cols.append(columnName)
-
-            print(type(columnData[1]))            
