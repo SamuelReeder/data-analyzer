@@ -1,5 +1,6 @@
 from numpy import float64
 import tensorflow as tf
+import pandas as pd
 import sys
 
 sample = {}
@@ -20,17 +21,32 @@ def convert(lst):
     return res_dct 
 
 converted = convert(sample)
-print(converted)
 
-# loaded_model = tf.keras.models.load_model(sys.argv[1])
+loaded_model = tf.keras.models.load_model(sys.argv[1])
 
-loaded_model = tf.keras.models.load_model('models/dnn_model')
-
+print(len(loaded_model.layers))
 
 input_dict = {name: tf.convert_to_tensor([value]) for name, value in converted.items()}
 
-predict = loaded_model.predict(input_dict)
-prob = tf.nn.sigmoid(predict[0])
+try:
+    test = pd.DataFrame(input_dict)
 
-with open('results.txt', 'w+') as f:
-    f.write("%.1f" % (100 * prob))
+    predict = loaded_model.predict(test)
+
+    print(predict)
+    with open('results.txt', 'w+') as f:
+        f.write(str(predict))
+    
+    print("FINISHED")
+
+except ValueError:
+    predict = loaded_model.predict(input_dict)
+
+    prob = tf.nn.sigmoid(predict[0])
+
+    with open('results.txt', 'w+') as f:
+        f.write("%.1f" % (100 * prob))
+    
+    print("%.1f" % (100 * prob))
+finally:
+    print("Ok now it's done")

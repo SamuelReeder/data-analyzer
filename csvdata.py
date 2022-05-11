@@ -9,10 +9,14 @@ class CSVData:
 
     def __init__(self, train, test, together):
         column_names = ['MPG', 'Cylinders', 'Displacement', 'Horsepower', 'Weight',
-                'Acceleration', 'Model Year', 'Origin']
+                'Acceleration', 'ModelYear', 'Origin']
         if not together:
             self.train = pd.read_csv(train)
             self.test = pd.read_csv(test)
+            self.train.isna().sum()
+            self.train = self.train.dropna()
+            self.test.isna().sum()
+            self.test = self.train.dropna()
         else:
             data = pd.read_csv(train, names=column_names,
                           na_values='?', comment='\t',
