@@ -242,7 +242,12 @@ public class MainViewDisplay extends JFrame {
             System.out.println("It is null");
         } else {
             this.theBackendModel.theModel.setTraining(this.trainingInput.getText().trim());
-            this.theBackendModel.theModel.setTesting(this.testingInput.getText().trim());
+            String temp = this.testingInput.getText().trim();
+            if (temp == null || temp.equals("")) {
+                this.theBackendModel.theModel.setTesting("none");
+            } else {
+                this.theBackendModel.theModel.setTesting(temp);
+            }
             this.theBackendModel.theModel.setResponding(this.respondingInput.getText().trim());
         }
     }

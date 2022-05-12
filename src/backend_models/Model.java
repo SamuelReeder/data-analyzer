@@ -37,9 +37,9 @@ public class Model extends Information {
 
         String args;
         if (super.getIsWindows()) {
-            args = ".\\venv\\Scripts\\activate && python main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getResponding();
+            args = ".\\venv\\Scripts\\activate && python main.py " + super.getTraining() + " " + super.getTesting() + " " + "opt" + " " + super.getResponding();
         } else {
-            args = "source ./venv/bin/activate && python3 main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getResponding();
+            args = "source ./venv/bin/activate && python3 main.py " + super.getTraining() + " " + super.getTesting() + " " + "opt" + " " + super.getResponding();
         } 
         
         System.out.println(args);
@@ -57,8 +57,8 @@ public class Model extends Information {
         pw.print(super.getPrediction());
 
         fw.close();
-        pw.close();
-        
+        pw.close(); 
+       
         String args;
         if (super.getIsWindows()) {
             args = ".\\venv\\Scripts\\activate && python predict.py " + super.getPath();
