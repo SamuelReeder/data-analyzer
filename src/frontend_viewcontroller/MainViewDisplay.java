@@ -24,6 +24,8 @@ public class MainViewDisplay extends JFrame {
     
     JSeparator trainPredict;
     
+    JComboBox alg;
+    
     public MainViewDisplay(BackendModelSetup aBackend) {
         this.theBackendModel = aBackend;
         this.initComponents();
@@ -99,7 +101,11 @@ public class MainViewDisplay extends JFrame {
         
         this.trainPredict = new JSeparator();
         this.trainPredict.setOrientation(SwingConstants.HORIZONTAL);
-
+        
+        this.alg = new JComboBox();
+        this.alg.addItem("Optimize");
+        this.alg.addItem("Classification");
+        this.alg.addItem("Regression");
 
         /*
          * Choose your LayoutManager for the mainDisplayPane here. See:
@@ -157,10 +163,19 @@ public class MainViewDisplay extends JFrame {
         
         c = new GridBagConstraints();
         c.gridx = 4;
+        c.gridy = 2;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(5, 5, 5, 5);
+        mainDisplayPane.add(this.alg, c);
+        
+        c = new GridBagConstraints();
+        c.gridx = 4;
         c.gridy = 3;
         c.gridwidth = 1;
         c.gridheight = 1;
-        c.fill = GridBagConstraints.CENTER;
+        c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(5, 5, 5, 5);
         mainDisplayPane.add(this.trainButton, c);
         
@@ -249,6 +264,7 @@ public class MainViewDisplay extends JFrame {
                 this.theBackendModel.theModel.setTesting(temp);
             }
             this.theBackendModel.theModel.setResponding(this.respondingInput.getText().trim());
+            this.theBackendModel.theModel.setAlg(this.alg.getSelectedItem().toString().trim());
         }
     }
     void openInfoPanel() {
