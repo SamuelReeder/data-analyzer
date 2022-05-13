@@ -39,13 +39,13 @@ public class MainViewDisplay extends JFrame {
         
         GridBagConstraints c;
         
-        this.setMinimumSize(new Dimension(400, 600));
+        this.setMinimumSize(new Dimension(600, 500));
 
         this.trainingInput = new JTextField();
         this.trainingInput.setToolTipText("Provide URL or path to training dataset");
         
         this.testingInput = new JTextField();
-        this.testingInput.setToolTipText("Provide URL or path to testing dataset");
+        this.testingInput.setToolTipText("Provide URL or path to testing dataset or leave blank if not applicable");
         
         this.respondingInput = new JTextField();
         this.respondingInput.setToolTipText("Provide name of responsive column");
@@ -65,12 +65,14 @@ public class MainViewDisplay extends JFrame {
         this.predictionField.setLineWrap(true);
         this.predictionField.setEditable(false);
         this.predictionField.setWrapStyleWord(rootPaneCheckingEnabled);
+        this.predictionField.setToolTipText("You will see the output for your prediction here");
         
         this.predictionInputField = new JTextArea();
         this.predictionInputField.setSize(250, 500);
         this.predictionInputField.setLineWrap(true);
         this.predictionInputField.setEditable(true);
         this.predictionInputField.setWrapStyleWord(rootPaneCheckingEnabled);
+        this.predictionInputField.setToolTipText("Provide prediction input here");
         
         this.importModelFromFileButton = new JButton();
         this.importModelFromFileButton.setText("Import Model");
