@@ -11,7 +11,7 @@ package backend_models;
  */
 public class Information {
     
-    private String training, testing, responding, path, prediction;
+    private String training, testing, responding, path, prediction, alg;
     
     private boolean isWindows;
     
@@ -43,6 +43,10 @@ public class Information {
         this.prediction = pred;
     }
     
+    public void setAlg(String alg) {
+        this.alg = alg;
+    }
+    
     public String getTraining() {
         return this.training;
     }
@@ -65,5 +69,9 @@ public class Information {
     
     public boolean getIsWindows() {
         return this.isWindows;
+    }
+    
+    public String getAlg() {
+        return this.alg;
     }
 }

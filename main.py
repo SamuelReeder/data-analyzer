@@ -106,7 +106,7 @@ def trainRegressionNeuralNet():
 
 
 
-if r_inputs[responsive].dtype == 'float32' and (alg == 'regress' or alg == 'opt') and not d.isItClassification(responsive):
+if r_inputs[responsive].dtype == 'float32' and (alg == 'Regression' or alg == 'Optimize') and not d.isItClassification(responsive):
   trainRegressionNeuralNet()
 else:
   trainClassificationNeuralNet(d)
