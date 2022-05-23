@@ -24,7 +24,7 @@ public class MainViewDisplay extends JFrame {
     
     JSeparator trainPredict;
     
-    JComboBox dropdownMenu;
+    JComboBox alg;
     
     public MainViewDisplay(BackendModelSetup aBackend) {
         this.theBackendModel = aBackend;
@@ -39,13 +39,13 @@ public class MainViewDisplay extends JFrame {
         
         GridBagConstraints c;
         
-        this.setMinimumSize(new Dimension(400, 600));
+        this.setMinimumSize(new Dimension(600, 500));
 
         this.trainingInput = new JTextField();
         this.trainingInput.setToolTipText("Provide URL or path to training dataset");
         
         this.testingInput = new JTextField();
-        this.testingInput.setToolTipText("Provide URL or path to testing dataset");
+        this.testingInput.setToolTipText("Provide URL or path to testing dataset or leave blank if not applicable");
         
         this.respondingInput = new JTextField();
         this.respondingInput.setToolTipText("Provide name of responsive column");
@@ -65,12 +65,14 @@ public class MainViewDisplay extends JFrame {
         this.predictionField.setLineWrap(true);
         this.predictionField.setEditable(false);
         this.predictionField.setWrapStyleWord(rootPaneCheckingEnabled);
+        this.predictionField.setToolTipText("You will see the output for your prediction here");
         
         this.predictionInputField = new JTextArea();
         this.predictionInputField.setSize(250, 500);
         this.predictionInputField.setLineWrap(true);
         this.predictionInputField.setEditable(true);
         this.predictionInputField.setWrapStyleWord(rootPaneCheckingEnabled);
+        this.predictionInputField.setToolTipText("Provide prediction input here");
         
         this.importModelFromFileButton = new JButton();
         this.importModelFromFileButton.setText("Import Model");
@@ -101,12 +103,11 @@ public class MainViewDisplay extends JFrame {
         
         this.trainPredict = new JSeparator();
         this.trainPredict.setOrientation(SwingConstants.HORIZONTAL);
-
-        this.dropdownMenu = new JComboBox();
-//        this.dropdownMenu.setEditable(rootPaneCheckingEnabled);
-        this.dropdownMenu.addItem(1);
-        this.dropdownMenu.addItem(2);
-        this.dropdownMenu.addItem(3);
+        
+        this.alg = new JComboBox();
+        this.alg.addItem("Optimize");
+        this.alg.addItem("Classification");
+        this.alg.addItem("Regression");
 
         /*
          * Choose your LayoutManager for the mainDisplayPane here. See:
@@ -173,10 +174,19 @@ public class MainViewDisplay extends JFrame {
         
         c = new GridBagConstraints();
         c.gridx = 4;
+        c.gridy = 2;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(5, 5, 5, 5);
+        mainDisplayPane.add(this.alg, c);
+        
+        c = new GridBagConstraints();
+        c.gridx = 4;
         c.gridy = 3;
         c.gridwidth = 1;
         c.gridheight = 1;
-        c.fill = GridBagConstraints.CENTER;
+        c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(5, 5, 5, 5);
         mainDisplayPane.add(this.trainButton, c);
         
@@ -258,8 +268,14 @@ public class MainViewDisplay extends JFrame {
             System.out.println("It is null");
         } else {
             this.theBackendModel.theModel.setTraining(this.trainingInput.getText().trim());
-            this.theBackendModel.theModel.setTesting(this.testingInput.getText().trim());
+            String temp = this.testingInput.getText().trim();
+            if (temp == null || temp.equals("")) {
+                this.theBackendModel.theModel.setTesting("none");
+            } else {
+                this.theBackendModel.theModel.setTesting(temp);
+            }
             this.theBackendModel.theModel.setResponding(this.respondingInput.getText().trim());
+            this.theBackendModel.theModel.setAlg(this.alg.getSelectedItem().toString().trim());
         }
     }
     void openInfoPanel() {

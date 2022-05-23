@@ -1,5 +1,6 @@
 from array import array
 import csvdata as csv
+import enum
 
 import tensorflow as tf
 import numpy as np
@@ -8,28 +9,27 @@ from tensorflow.keras import layers
 class PreProcessing (csv.CSVData):
 
     def __init__(self, responding, train, test, together):
-        # self.data = data
 
         csv.CSVData.__init__(self, train, test, together)
 
         self.train = self.get_train()
         self.test = self.get_test()
         self.features = self.train.copy()
+        # for columnName, columnaData in self.features.iteritems():
+        #     print("Wassup", columnName)
+        #     print("data", columnaData)
 
-        self.responding = responding
-
-        print('responsive', responding)
-        self.labels = self.defineResponding(responding)
-        self.defineResponding(responding)
+        self.labels = self.features.pop(responding) 
         self.test_features = self.test.copy()
+        self.test_labels = self.test_features.pop(responding)
 
     def convertToTensor(self):
         return
 
-    def defineInput(self):
+    def defineInput(self, responding):
 
         self.inputs = {}
-        for name, column in self.features.items():
+        for name, column in (self.train.items() if responding else self.features.items()):
             dtype = column.dtype
             if dtype == object:
                 dtype = tf.string
@@ -71,20 +71,15 @@ class PreProcessing (csv.CSVData):
         lower_dimension_dict =  {name:values[:1] for name, values in temp_dict.items()}
         return temp_dict, lower_dimension_dict
 
-    # def setAlgorithym(self):
-    #     self.inputs = {}
-    #     for name, column in self.features.items():
-    #         dtype = column.dtype
-    #         if dtype == object:
-    #             dtype = tf.string
-    #         else:
-    #             dtype = tf.float32
+    def isItClassification(self, col):
+        vals = []
+        for i in self.train[col]:
+            try:
+                if vals.index(i):
+                    continue
+            except ValueError:
+                vals.append(i)
 
-    #         self.inputs[name] = tf.keras.Input(shape=(1,), name=name, dtype=dtype)
-
-    #     self.numeric_inputs = {name:input for name,input in self.inputs.items()
-    #               if input.dtype==tf.float32}
-
-    #     return self.inputs, self.numeric_inputs
-
-
+        if len(vals) < len(self.train[col]) / 4:
+            return True
+        return False  

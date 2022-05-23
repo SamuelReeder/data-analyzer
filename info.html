@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <style>
+        * {
+            margin: 0;
+            padding: 10px;
+        }
+
+        input {
+            background: none !important;
+            border: none;
+            padding: 0 !important;
+            font-family: arial, sans-serif;
+            color: #069;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+    <script type="text/javascript">
+        function openURL() {
+            var shell = new ActiveXObject("WScript.Shell");
+            shell.run("http://www.google.com");
+        }
+    </script>
+</head>
+
+<body>
+    <section>
+        <div class="container">
+            <div class="row justify-content-center" style="text-align: left;">
+                <h3><b>Summary</b></h3>
+                <p>This software is designed to offer various utilities to help in analyzing data and extracting
+                    valuable
+                    conclusions.</p>
+                <h3>
+                    Why?
+                </h3>
+                <p>
+                    Human minds are not optimized to consider extremely large datasets and draw conclusions and
+                    consequently form predictions. We consistently require technical tools such as Microsoft Excel or
+                    graphs to better understand the data. Nonetheless, humans simply cannot accurately analyze data to
+                    the to extent that computational devices can. This is one area where AI will certainly prevail.
+                </p>
+                <h3>
+                    How does it work?
+                </h3>
+                <p>
+                    I will only delve into the conceptual aspects of its function, but feel free to preview the code and
+                    read the applicable <a href="https://www.tensorflow.org/api_docs">TensorFlow API documentation</a>
+                    for more practical information.<br><br>
+                </p>
+                <p>
+                    This software, backed by the concept of <a href="https://en.wikipedia.org/wiki/Deep_learning">Deep
+                        Learning</a> utilizes an <a href="https://en.wikipedia.org/wiki/Artificial_neural_network"
+                        target="_blank">Artificial Neural Network</a> to
+                    evaluate the patterns and characteristics of a provided dataset to train a Deep Learning Model.
+                </p>
+                <p>
+                    An Artificial Neural Network (ANN), often referred to as a Deep Neural Network (DNN), or a Neural
+                    Network (NN), is comprised of a series of layers that an input must commute through to produce an
+                    output. Each of these layers consists of a number of Artificial Neurons which hold weights and fire
+                    accordingly (more later). You might notice that several of these terms are commonly used in the
+                    fields of cognitive sciences, such as neuroscience and psychology. We too are provided input through
+                    a sense, which is processed through layers of our neurological system, and actions and memories are
+                    induced through the firing of particular neurons.That is no coincidence, the common objective of an
+                    Artificial Neural Network is to emulate and improve on the function of the human brain. Completing
+                    tasks the human brain can, and tasks that it cannot. The idea of the Turing Test, conceived by Alan
+                    Turing, is to evaluate whether a machine can properly imitate a human in every intellectual way. At
+                    such a point, the conscience of AI will be indistinguishable from humans.
+                </p>
+                <h3>
+                    ANN Process
+                </h3>
+                <p>
+                    <b>In an ANN, the process is as follows:</b>
+                </p>
+                <ol>
+                    <li>
+                        An input is provided to the first layer; the input layer.
+                    </li>
+                    <li>
+                        If applicable, the input reaches the hidden layers in the form of a series of weight.
+                    </li>
+                    <li>
+                        The input reaches the output layer, where a single weight may be assigned to the output, or a
+                        probability distribution will be created of all possibles output. The number of neurons in this
+                        layer will represent the number of possible outputs.
+                    </li>
+                </ol>
+
+                <div style="text-align: center; margin: auto;">
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Colored_neural_network.svg/420px-Colored_neural_network.svg.png">
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

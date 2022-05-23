@@ -115,26 +115,6 @@ public class ModelsAndViewsController {
         }
     }
 
-    private class SetVarsAction implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent ae) {
-//      Connects to a text input field such that the user can
-//      enter the names of the responding variables fpr the
-//      model to optimize its training.
-        }
-    }
-    
-//    private class OrderAction implements ActionListener {
-//
-//        @Override
-//        public void actionPerformed(ActionEvent ae) {
-////            String petName = theMainViewDisplay.dropdownMenu.getSelectedItem();
-//              theMainViewDisplay.dropdownMenu.
-////            updateLabel(petName);
-//        }
-//    }
-
     public ModelsAndViewsController(BackendModelSetup aBackend, MainViewDisplay aMainViewDisplay) {
         this.theBackendModel = aBackend;
         this.theMainViewDisplay = aMainViewDisplay;
@@ -147,6 +127,6 @@ public class ModelsAndViewsController {
         this.theMainViewDisplay.predictButton.addActionListener(new PredictAction());
         this.theMainViewDisplay.infoButton.addActionListener(new InfoAction());
         this.theMainViewDisplay.setup.addActionListener(new SetupAction());
-//        this.theMainViewDisplay.dropdownMenu.addActionListener(new OrderAction());
+//        this.theMainViewDisplay.alg.addActionListener(new AlgAction());
     }
 }
