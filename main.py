@@ -13,12 +13,14 @@ if sys.argv[2] != 'none':
 
 alg = sys.argv[3]
 
-responsive = sys.argv[4]
+epochs = int(sys.argv[4])
 
-if len(sys.argv) > 5:
-    responsive = []
-    for i in len(sys.argv) - 4:
-        responsive[i] = sys.argv[i + 4]
+responsive = sys.argv[5]
+
+# if len(sys.argv) > 6:
+#     responsive = []
+#     for i in len(sys.argv) - 5:
+#         responsive[i] = sys.argv[i + 6]
 
 d = p.PreProcessing(responsive, training, testing, True if testing is None else False)
 
@@ -59,12 +61,15 @@ def trainClassificationNeuralNet(d):
   test_features_dict, test_feat_dict = d.defineFeaturesDict(d.test_features)
 
   class_model = model(preprocessing, inputs)
-  class_model.fit(x=features_dict, y=d.labels, epochs=10)
+  class_model.fit(x=features_dict, y=d.labels, epochs=epochs)
 
   results = class_model.evaluate(x=features_dict, y=d.labels, batch_size=128)
   print(results)
 
   class_model.save('models/test_model')
+
+  with open('results.txt', 'w+') as f:
+        f.write(str(results))
 
 def build_and_compile_model(norm):
   model = tf.keras.Sequential([
@@ -89,7 +94,7 @@ def trainRegressionNeuralNet():
     d.features,
     d.labels,
     validation_split=0.2,
-    verbose=0, epochs=100)
+    verbose=0, epochs=epochs)
   
   test_results = {}
 

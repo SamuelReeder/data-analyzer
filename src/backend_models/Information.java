@@ -5,13 +5,17 @@
  */
 package backend_models;
 
+import java.text.NumberFormat;
+
 /**
  *
  * @author samue
  */
 public class Information {
     
-    private String training, testing, responding, path, prediction, alg;
+    private String training, testing, responding, path, prediction, alg, loss;
+        
+    private int epochs; 
     
     private boolean isWindows;
     
@@ -47,6 +51,16 @@ public class Information {
         this.alg = alg;
     }
     
+    public void setLoss(String loss) {
+        NumberFormat fmt = NumberFormat.getPercentInstance();
+        fmt.setMaximumFractionDigits(1);
+        this.loss = fmt.format(1 - Double.parseDouble(loss));
+    }
+    
+    public void setEpochs(String epochs) {
+        this.epochs = Integer.parseInt(epochs);
+    }
+    
     public String getTraining() {
         return this.training;
     }
@@ -73,5 +87,13 @@ public class Information {
     
     public String getAlg() {
         return this.alg;
+    }
+    
+    public String getLoss() {
+        return this.loss;
+    }
+    
+    public int getEpochs() {
+        return this.epochs;
     }
 }

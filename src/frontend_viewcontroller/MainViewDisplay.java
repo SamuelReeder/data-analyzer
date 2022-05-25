@@ -15,12 +15,12 @@ public class MainViewDisplay extends JFrame {
     BackendModelSetup theBackendModel;
     
     JLabel textContentLabel;
-    JTextArea textContentField, predictionField, predictionInputField;
+    JTextArea textContentField, predictionField, predictionInputField, trainingOutputField;
     
     JButton infoButton, outputButton, predictButton, trainButton, saveModelToFileButton, importModelFromFileButton, setup;
-    JTextField trainingInput, testingInput, respondingInput;
+    JTextField trainingInput, testingInput, respondingInput, epochs, importedModel;
 
-    JScrollPane textContentPane;
+    JScrollPane textContentPane, predictionInputPane;
     
     JSeparator trainPredict;
     
@@ -39,7 +39,7 @@ public class MainViewDisplay extends JFrame {
         
         GridBagConstraints c;
         
-        this.setMinimumSize(new Dimension(600, 500));
+        this.setMinimumSize(new Dimension(600, 800));
 
         this.trainingInput = new JTextField();
         this.trainingInput.setToolTipText("Provide URL or path to training dataset");
@@ -60,6 +60,12 @@ public class MainViewDisplay extends JFrame {
         this.textContentField.setEditable(true);
         this.textContentField.setWrapStyleWord(rootPaneCheckingEnabled);
         
+        this.trainingOutputField = new JTextArea();
+        this.trainingOutputField.setSize(250, 500);
+        this.trainingOutputField.setLineWrap(true);
+        this.trainingOutputField.setEditable(false);
+        this.trainingOutputField.setWrapStyleWord(rootPaneCheckingEnabled);
+        
         this.predictionField = new JTextArea();
         this.predictionField.setSize(250, 500);
         this.predictionField.setLineWrap(true);
@@ -68,11 +74,13 @@ public class MainViewDisplay extends JFrame {
         this.predictionField.setToolTipText("You will see the output for your prediction here");
         
         this.predictionInputField = new JTextArea();
-        this.predictionInputField.setSize(250, 500);
         this.predictionInputField.setLineWrap(true);
         this.predictionInputField.setEditable(true);
         this.predictionInputField.setWrapStyleWord(rootPaneCheckingEnabled);
         this.predictionInputField.setToolTipText("Provide prediction input here");
+        this.predictionInputPane = new JScrollPane(this.predictionInputField);
+        this.predictionInputPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        this.predictionInputPane.setSize(250, 500);
         
         this.importModelFromFileButton = new JButton();
         this.importModelFromFileButton.setText("Import Model");
@@ -108,6 +116,12 @@ public class MainViewDisplay extends JFrame {
         this.alg.addItem("Optimize");
         this.alg.addItem("Classification");
         this.alg.addItem("Regression");
+        
+        this.epochs = new JTextField();
+        this.respondingInput.setToolTipText("Provide x number of epochs to train with {x| 0 < x < 100, x is int}");
+        
+        this.importedModel = new JTextField();
+        this.importedModel.setText("No model imported");
 
         /*
          * Choose your LayoutManager for the mainDisplayPane here. See:
@@ -164,6 +178,15 @@ public class MainViewDisplay extends JFrame {
         mainDisplayPane.add(this.respondingInput, c);
         
         c = new GridBagConstraints();
+        c.gridx = 1;
+        c.gridy = 4;
+        c.gridwidth = 3;
+        c.gridheight = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(5, 5, 5, 5);
+        mainDisplayPane.add(this.trainingOutputField, c);
+        
+        c = new GridBagConstraints();
         c.gridx = 4;
         c.gridy = 2;
         c.gridwidth = 1;
@@ -179,11 +202,20 @@ public class MainViewDisplay extends JFrame {
         c.gridheight = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(5, 5, 5, 5);
+        mainDisplayPane.add(this.epochs, c);
+        
+        c = new GridBagConstraints();
+        c.gridx = 4;
+        c.gridy = 4;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(5, 5, 5, 5);
         mainDisplayPane.add(this.trainButton, c);
         
         c = new GridBagConstraints();
         c.gridx = 0;
-        c.gridy = 4;
+        c.gridy = 5;
         c.gridwidth = 5;
         c.gridheight = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -192,7 +224,7 @@ public class MainViewDisplay extends JFrame {
         
         c = new GridBagConstraints();
         c.gridx = 1;
-        c.gridy = 6;
+        c.gridy = 8;
         c.gridwidth = 3;
         c.gridheight = 1;
         c.ipady = 50;
@@ -202,17 +234,17 @@ public class MainViewDisplay extends JFrame {
         
         c = new GridBagConstraints();
         c.gridx = 1;
-        c.gridy = 5;
+        c.gridy = 6;
         c.gridwidth = 3;
-        c.gridheight = 1;
+        c.gridheight = 2;
         c.ipady = 50;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(5, 5, 5, 5);
-        mainDisplayPane.add(this.predictionInputField, c);
+        mainDisplayPane.add(this.predictionInputPane, c);
         
         c = new GridBagConstraints();
         c.gridx = 4;
-        c.gridy = 5;
+        c.gridy = 6;
         c.gridwidth = 1;
         c.gridheight = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -221,14 +253,22 @@ public class MainViewDisplay extends JFrame {
 
         c = new GridBagConstraints();
         c.gridx = 0;
-        c.gridy = 5;
+        c.gridy = 6;
         c.gridwidth = 1;
         c.gridheight = 1;
         mainDisplayPane.add(this.importModelFromFileButton, c);
         
         c = new GridBagConstraints();
         c.gridx = 0;
-        c.gridy = 6;
+        c.gridy = 7;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        
+        mainDisplayPane.add(this.importedModel, c);
+        
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 8;
         c.gridwidth = 1;
         c.gridheight = 1;
         mainDisplayPane.add(this.setup, c);
@@ -245,6 +285,14 @@ public class MainViewDisplay extends JFrame {
         }
     }
     
+    void trainingOutput(String output) {
+        if (this.theBackendModel.theModel == null) {
+            System.out.println("It is null");
+        } else {
+            this.trainingOutputField.setText(output);
+        }
+    }
+    
     void getPrediction() {
         if (this.theBackendModel.theModel == null) {
             System.out.println("It is null");
@@ -252,6 +300,10 @@ public class MainViewDisplay extends JFrame {
             System.out.println(this.predictionInputField.getText().trim());
             this.theBackendModel.theModel.setPrediction(this.predictionInputField.getText().trim());
         }
+    }
+    
+    void updateImport(String path) {
+        this.importedModel.setText(path);
     }
     
     void updateBackend() {
@@ -266,9 +318,21 @@ public class MainViewDisplay extends JFrame {
                 this.theBackendModel.theModel.setTesting(temp);
             }
             this.theBackendModel.theModel.setResponding(this.respondingInput.getText().trim());
+            this.theBackendModel.theModel.setEpochs(this.epochs.getText().trim());
             this.theBackendModel.theModel.setAlg(this.alg.getSelectedItem().toString().trim());
         }
     }
+    
+    public void delete() throws StringIndexOutOfBoundsException {
+        String inputText = this.epochs.getText();
+        String newStr = inputText.substring(0, -1);
+        this.epochs.setText(newStr);
+    }
+    
+    public boolean isEpochInRange() {
+        return this.epochs.getText().length() > 1 ? false : true;
+    }
+    
     void openInfoPanel() {
 //      Will open a panel to show information about the software.
 //        -  Ideally, this will be a separate GUI.

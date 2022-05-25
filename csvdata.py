@@ -18,11 +18,12 @@ class CSVData:
             self.test.isna().sum()
             self.test = self.train.dropna()
         else:
-            data = pd.read_csv(train, names=column_names,
-                          na_values='?', comment='\t',
-                          sep=' ', skipinitialspace=True)
-            data.isna().sum()
-            data = data.dropna()
+            # data = pd.read_csv(train, names=column_names,
+            #               na_values='?', comment='\t',
+            #               sep=' ', skipinitialspace=True)
+            # data.isna().sum()
+            # data = data.dropna()
+            data = pd.read_csv(train)
             self.train = data.sample(frac=0.8, random_state=0)
             self.test = data.drop(self.train.index)
             

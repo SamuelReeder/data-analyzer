@@ -5,14 +5,11 @@
  */
 package backend_models;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Scanner;
 
 /**
  *
@@ -33,13 +30,13 @@ public class Model extends Information {
         this.consoleOutput = "";
     }
 
-    public void trainModel() {
+    public void trainModel() throws IOException {
 
         String args;
         if (super.getIsWindows()) {
-            args = ".\\venv\\Scripts\\activate && python main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getAlg() + " " + super.getResponding();
+            args = ".\\venv\\Scripts\\activate && python main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getAlg() + " " + super.getEpochs() + " " + super.getResponding();
         } else {
-            args = "source ./venv/bin/activate && python3 main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getAlg() + " " + super.getResponding();
+            args = "source ./venv/bin/activate && python3 main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getAlg() + " " + super.getEpochs() + " " + super.getResponding();
         } 
         
         System.out.println(args);
@@ -47,6 +44,9 @@ public class Model extends Information {
         Python.setResponsive(super.getResponding());
         
         Python.run(args, super.getIsWindows());
+        
+        Scanner sc = new Scanner(new File("results.txt"));
+        super.setLoss(sc.nextLine());
     }
 
     public void predict() {

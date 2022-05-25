@@ -4,6 +4,8 @@ import backend_models.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -28,10 +30,10 @@ public class ModelsAndViewsController {
             try {
                 theBackendModel.theModel = new Model("");
                 theBackendModel.theModel.setPath(theMainViewDisplay.showOpenDialog());
+                theMainViewDisplay.updateImport(theBackendModel.theModel.getPath());
             } catch (IOException ex) {
                 Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
             }
-
         }
     }
 
@@ -57,8 +59,15 @@ public class ModelsAndViewsController {
             }
 
             theMainViewDisplay.updateBackend();
-
-            theBackendModel.theModel.trainModel();
+            
+            try {
+                theMainViewDisplay.trainingOutput("The model is currently training with 10 epochs...");
+                theBackendModel.theModel.trainModel();
+                theMainViewDisplay.trainingOutput("The model has completed training with an accuracy of " + theBackendModel.theModel.getLoss());
+            } catch (IOException err) {
+                theMainViewDisplay.trainingOutput("An error has occured");
+            }
+            
 
         }
     }
@@ -114,6 +123,26 @@ public class ModelsAndViewsController {
             Python.run(args, theBackendModel.theModel.getIsWindows());
         }
     }
+    
+    private class Key implements KeyListener {
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+
+        }
+
+        @Override
+        public void keyTyped(KeyEvent e) {
+            if (e.getKeyChar() < 48 || e.getKeyChar() > 57 || !theMainViewDisplay.isEpochInRange()) {
+                theMainViewDisplay.delete();
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+
+        }
+    }
 
     public ModelsAndViewsController(BackendModelSetup aBackend, MainViewDisplay aMainViewDisplay) {
         this.theBackendModel = aBackend;
@@ -127,6 +156,7 @@ public class ModelsAndViewsController {
         this.theMainViewDisplay.predictButton.addActionListener(new PredictAction());
         this.theMainViewDisplay.infoButton.addActionListener(new InfoAction());
         this.theMainViewDisplay.setup.addActionListener(new SetupAction());
+        this.theMainViewDisplay.epochs.addKeyListener(new Key());
 //        this.theMainViewDisplay.alg.addActionListener(new AlgAction());
     }
 }
