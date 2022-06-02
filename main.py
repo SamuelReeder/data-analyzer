@@ -6,31 +6,45 @@ import preprocessing as p
 import numpy as np
 from tensorflow.keras import layers
 
-training = sys.argv[1]
-testing = None
-if sys.argv[2] != 'none':
-    testing = sys.argv[2]
 
-alg = sys.argv[3]
+if sys.argv[1] == "test":
+  training = 'https://storage.googleapis.com/tf-datasets/titanic/train.csv'
+  testing = 'https://storage.googleapis.com/tf-datasets/titanic/eval.csv'
+  responsive = "fare"
+  alg = "Regression"
+  epochs = 7
 
-epochs = int(sys.argv[4])
+  # training = 'C:/Users/samue/Downloads/epidemiology.csv'
+  # testing = None
+  # responsive = "new_recovered"
+  # alg = "Regression"
+elif sys.argv[1] == "test2":
+  training = "http://archive.ics.uci.edu/ml/machine-learning-databases/auto-mpg/auto-mpg.data"
+  testing = ""
+  responsive = "MPG"
+  alg = "Optimize"
+else:
+  training = sys.argv[1]
+  testing = None
+  if sys.argv[2] != 'none':
+      testing = sys.argv[2]
 
-responsive = sys.argv[5]
+  alg = sys.argv[3]
 
-# if len(sys.argv) > 6:
-#     responsive = []
-#     for i in len(sys.argv) - 5:
-#         responsive[i] = sys.argv[i + 6]
+  epochs = int(sys.argv[4])
+
+  responsive = sys.argv[5]
 
 d = p.PreProcessing(responsive, training, testing, True if testing is None else False)
 
 r_inputs, r_numeric_inputs = d.defineInput(True)
 
-print(d.isItClassification(responsive))
 
 def model(preprocessing_head, inputs):
+
     body = tf.keras.Sequential([
-      layers.Dense(64),
+      layers.Dense(len(d.train.columns)),
+      # layers.Dense(len(d.train.columns), activation="relu"),
       layers.Dense(1)
     ])
 
@@ -46,11 +60,11 @@ def trainClassificationNeuralNet(d):
 
   inputs, numeric_inputs = d.defineInput(False)
 
-  print(inputs)
+  # print(inputs)
 
   preprocessed_inputs = d.preprocess()
 
-  print(preprocessed_inputs)
+  # print(preprocessed_inputs)
 
   preprocessing = tf.keras.Model(inputs, preprocessed_inputs)
 
@@ -108,8 +122,6 @@ def trainRegressionNeuralNet():
   print(test_predictions)
 
   dnn_model.save('models/test_dnn_model')
-
-
 
 if r_inputs[responsive].dtype == 'float32' and (alg == 'Regression' or alg == 'Optimize') and not d.isItClassification(responsive):
   trainRegressionNeuralNet()

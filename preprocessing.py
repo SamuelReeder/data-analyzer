@@ -4,6 +4,9 @@ import enum
 import tensorflow as tf
 import numpy as np
 from tensorflow.keras import layers
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras import layers
+
 
 class PreProcessing (csv.CSVData):
 
@@ -13,17 +16,16 @@ class PreProcessing (csv.CSVData):
 
         self.train = self.get_train()
         self.test = self.get_test()
-        self.features = self.train.copy()
-        # for columnName, columnaData in self.features.iteritems():
-        #     print("Wassup", columnName)
-        #     print("data", columnaData)
 
+        # text_vector = layers.TextVectorization()
+        # layers.adapt
+        # self.train[responding], key1 = self.tokenize(self.train[responding])
+        # self.test[responding], key2 = self.tokenize(self.test[responding])
+
+        self.features = self.train.copy()
         self.labels = self.features.pop(responding) 
         self.test_features = self.test.copy()
         self.test_labels = self.test_features.pop(responding)
-
-    def convertToTensor(self):
-        return
 
     def defineInput(self, responding):
 
@@ -36,14 +38,18 @@ class PreProcessing (csv.CSVData):
                 dtype = tf.float32
 
             self.inputs[name] = tf.keras.Input(shape=(1,), name=name, dtype=dtype)
+            # print(self.inputs[name])
+            # print(tf.keras.Input(shape=(3,), name=name, dtype=dtype))
 
         self.numeric_inputs = {name:input for name,input in self.inputs.items()
                   if input.dtype==tf.float32}
 
         return self.inputs, self.numeric_inputs
 
-       
     def preprocess(self):
+
+        # possibly use text vectorization 
+
         x = layers.Concatenate()(list(self.numeric_inputs.values()))
         norm = layers.Normalization()
         norm.adapt(np.array(self.train[self.numeric_inputs.keys()]))
@@ -70,6 +76,7 @@ class PreProcessing (csv.CSVData):
         lower_dimension_dict =  {name:values[:1] for name, values in temp_dict.items()}
         return temp_dict, lower_dimension_dict
 
+
     def isItClassification(self, col):
         vals = []
         for i in self.train[col]:
@@ -82,3 +89,18 @@ class PreProcessing (csv.CSVData):
         if len(vals) < len(self.train[col]) / 4:
             return True
         return False  
+
+    
+    def numOfClassifications(self, responding):
+        return self.train[responding].unique()
+
+    def tokenize(self, col):
+        myTokenizer = Tokenizer(num_words=100)
+        myTokenizer.fit_on_texts(col)
+        sequences = myTokenizer.texts_to_sequences(col)
+
+        arr = []
+        for i, num in enumerate(sequences):
+            arr.append(num[0])
+        
+        return arr, myTokenizer.word_index

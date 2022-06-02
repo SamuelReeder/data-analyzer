@@ -30,6 +30,7 @@ public class ModelsAndViewsController {
             try {
                 theBackendModel.theModel = new Model("");
                 theBackendModel.theModel.setPath(theMainViewDisplay.showOpenDialog());
+                System.out.println(theBackendModel.theModel.getPath());
                 theMainViewDisplay.updateImport(theBackendModel.theModel.getPath());
             } catch (IOException ex) {
                 Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
@@ -82,7 +83,7 @@ public class ModelsAndViewsController {
             }
             theMainViewDisplay.getPrediction();
             theBackendModel.theModel.predict();
-
+            
             try {
                 Scanner sc = new Scanner(new File("results.txt"));
                 theBackendModel.theModel.output = "Variable: "  + (theBackendModel.theModel.getResponsive() != null ? theBackendModel.theModel.getResponsive() : "unknown") + ", has a " + sc.nextLine() + "% probability.";
