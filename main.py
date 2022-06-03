@@ -5,6 +5,7 @@ import tensorflow as tf
 import preprocessing as p
 import numpy as np
 from tensorflow.keras import layers
+from tensorflow import feature_column
 
 
 if sys.argv[1] == "test":
@@ -43,7 +44,7 @@ r_inputs, r_numeric_inputs = d.defineInput(True)
 def model(preprocessing_head, inputs):
 
     body = tf.keras.Sequential([
-      layers.Dense(len(d.train.columns)),
+      layers.Dense(64),
       # layers.Dense(len(d.train.columns), activation="relu"),
       layers.Dense(1)
     ])
@@ -123,7 +124,26 @@ def trainRegressionNeuralNet():
 
   dnn_model.save('models/test_dnn_model')
 
-if r_inputs[responsive].dtype == 'float32' and (alg == 'Regression' or alg == 'Optimize') and not d.isItClassification(responsive):
+def trainAlternate():
+  batch_size = 5
+  train_ds = d.df_to_dataset(d.train, batch_size=batch_size)
+  # val_ds = df_to_dataset(d.val, shuffle=False, batch_size=batch_size)
+  test_ds = d.df_to_dataset(d.test, shuffle=False, batch_size=batch_size)
+  example_batch = next(iter(train_ds))[0]
+
+  print(train_ds)
+
+  def demo(feature_column):
+    feature_layer = layers.DenseFeatures(feature_column)
+    print(feature_layer(example_batch).numpy())
+
+  # photo_count = feature_column.numeric_column('fare')
+  # demo(photo_count)
+
+
+
+if r_inputs[responsive].dtype == 'float32' and (alg == 'Regression' or alg == 'Optimize') and not p.PreProcessing.isItClassification(d.train, responsive):
   trainRegressionNeuralNet()
 else:
-  trainClassificationNeuralNet(d)
+  # trainClassificationNeuralNet(d)
+  trainAlternate()

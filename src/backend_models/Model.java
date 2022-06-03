@@ -17,15 +17,10 @@ import java.util.Scanner;
  */
 public class Model extends Information {
 
-    public String path;
-    public String consoleOutput;
+    public String path, consoleOutput, output, prediction, errorText;
     public String[] vars;
-    public String output;
-    public String prediction;
 
     public Model(String path) throws IOException {
-        
-        
         this.path = path;
         this.consoleOutput = "";
     }
@@ -46,7 +41,18 @@ public class Model extends Information {
         Python.run(args, super.getIsWindows());
         
         Scanner sc = new Scanner(new File("results.txt"));
-        super.setLoss(sc.nextLine());
+        
+        String str = "ERROR";
+        
+        System.out.println(str);
+        if (str.startsWith("ERROR")) {
+            super.setError(true);
+            super.setErrorText(str);
+        } else if (str == null || str.trim().equals("")) {
+            super.setError(true);
+        } else {
+            super.setLoss(str);
+        }
     }
 
     public void predict() {

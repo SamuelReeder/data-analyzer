@@ -62,9 +62,14 @@ public class ModelsAndViewsController {
             theMainViewDisplay.updateBackend();
             
             try {
-                theMainViewDisplay.trainingOutput("The model is currently training with 10 epochs...");
+                theMainViewDisplay.trainingOutput("The model is currently training through 10 epochs...");
                 theBackendModel.theModel.trainModel();
-                theMainViewDisplay.trainingOutput("The model has completed training with an accuracy of " + theBackendModel.theModel.getLoss());
+                if (theBackendModel.theModel.getError()) {
+                    String text = theBackendModel.theModel.getErrorText();
+                    theMainViewDisplay.errorDisplay((text.equals("") || text == null) ? "An unknown error occured" : text);
+                } else {
+                    theMainViewDisplay.trainingOutput("The model has completed training with an accuracy of " + theBackendModel.theModel.getLoss());
+                }
             } catch (IOException err) {
                 theMainViewDisplay.trainingOutput("An error has occured");
             }

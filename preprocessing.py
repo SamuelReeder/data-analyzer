@@ -1,5 +1,4 @@
 import csvdata as csv
-import enum
 
 import tensorflow as tf
 import numpy as np
@@ -14,14 +13,14 @@ class PreProcessing (csv.CSVData):
 
         csv.CSVData.__init__(self, train, test, together)
 
+        self.responding = responding
+        self.together= together
         self.train = self.get_train()
         self.test = self.get_test()
-
         # text_vector = layers.TextVectorization()
         # layers.adapt
         # self.train[responding], key1 = self.tokenize(self.train[responding])
         # self.test[responding], key2 = self.tokenize(self.test[responding])
-
         self.features = self.train.copy()
         self.labels = self.features.pop(responding) 
         self.test_features = self.test.copy()
@@ -38,8 +37,6 @@ class PreProcessing (csv.CSVData):
                 dtype = tf.float32
 
             self.inputs[name] = tf.keras.Input(shape=(1,), name=name, dtype=dtype)
-            # print(self.inputs[name])
-            # print(tf.keras.Input(shape=(3,), name=name, dtype=dtype))
 
         self.numeric_inputs = {name:input for name,input in self.inputs.items()
                   if input.dtype==tf.float32}
@@ -74,25 +71,8 @@ class PreProcessing (csv.CSVData):
         temp_dict = {name: np.array(value) 
                  for name, value in features.items()}
         lower_dimension_dict =  {name:values[:1] for name, values in temp_dict.items()}
+        print(temp_dict)
         return temp_dict, lower_dimension_dict
-
-
-    def isItClassification(self, col):
-        vals = []
-        for i in self.train[col]:
-            try:
-                if vals.index(i):
-                    continue
-            except ValueError:
-                vals.append(i)
-
-        if len(vals) < len(self.train[col]) / 4:
-            return True
-        return False  
-
-    
-    def numOfClassifications(self, responding):
-        return self.train[responding].unique()
 
     def tokenize(self, col):
         myTokenizer = Tokenizer(num_words=100)
@@ -104,3 +84,12 @@ class PreProcessing (csv.CSVData):
             arr.append(num[0])
         
         return arr, myTokenizer.word_index
+
+    def df_to_dataset(self, dataframe, shuffle=True, batch_size=32):
+        dataframe = dataframe.copy()
+        labels = dataframe.pop(self.responding)
+        ds = tf.data.Dataset.from_tensor_slices((dict(dataframe), labels))
+        if shuffle:
+            ds = ds.shuffle(buffer_size=len(dataframe))
+        ds = ds.batch(batch_size)
+        return ds

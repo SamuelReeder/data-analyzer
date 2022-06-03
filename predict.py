@@ -49,4 +49,4 @@ except ValueError:
     
     print("%.1f" % (100 * prob))
 finally:
-    print("Ok now it's done")
+    print("The prediction has completed")

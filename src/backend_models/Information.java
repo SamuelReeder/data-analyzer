@@ -13,11 +13,11 @@ import java.text.NumberFormat;
  */
 public class Information {
     
-    private String training, testing, responding, path, prediction, alg, loss;
+    private String training, testing, responding, path, prediction, alg, loss, errorText;
         
     private int epochs; 
     
-    private boolean isWindows;
+    private boolean isWindows, error = false;
     
     public Information() {
        if (System.getProperty("os.name").startsWith("Windows")) {
@@ -58,7 +58,19 @@ public class Information {
     }
     
     public void setEpochs(String epochs) {
-        this.epochs = Integer.parseInt(epochs);
+        try {
+            this.epochs = Integer.parseInt(epochs);
+        } catch (NumberFormatException e) {
+            this.epochs= 10;
+        }
+    }
+    
+    public void setError(boolean err) {
+        this.error = err;
+    }
+    
+    public void setErrorText(String errText) {
+        this.errorText = errText;
     }
     
     public String getTraining() {
@@ -95,5 +107,13 @@ public class Information {
     
     public int getEpochs() {
         return this.epochs;
+    }
+    
+    public boolean getError() {
+        return this.error;
+    }
+    
+    public String getErrorText(){
+        return this.errorText;
     }
 }

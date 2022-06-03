@@ -333,9 +333,18 @@ public class MainViewDisplay extends JFrame {
         return this.epochs.getText().length() > 1 ? false : true;
     }
     
-    void openInfoPanel() {
-//      Will open a panel to show information about the software.
-//        -  Ideally, this will be a separate GUI.
+    void errorDisplay(String err) {
+        JOptionPane.showMessageDialog(this,
+        "The file(s) you provided could not be found. Please ensure the specified path is correct.",
+        "RileNotFoundError error",
+        JOptionPane.ERROR_MESSAGE);
+    }
+    
+    void trainDisplay() {
+        JOptionPane.showMessageDialog(this,
+        "The file(s) you provided could not be found. Please ensure the specified path is correct.",
+        "RileNotFoundError error",
+        JOptionPane.ERROR_MESSAGE);
     }
 
     String showSaveDialog() {
@@ -346,7 +355,6 @@ public class MainViewDisplay extends JFrame {
             String thePath = theFile.getAbsolutePath();
             return thePath;
         }
-        
         return null;
     }
 

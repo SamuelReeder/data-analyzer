@@ -1,9 +1,6 @@
 import pandas as pd
 import numpy as np
-
-from pandas.api.types import is_string_dtype
-from pandas.api.types import is_numeric_dtype
-
+import sys
 
 class CSVData:
 
@@ -12,22 +9,32 @@ class CSVData:
         #         'Acceleration', 'ModelYear', 'Origin']
         column_names = pd.read_csv(train, nrows=1).columns.tolist()
 
-        if not together:
-            self.train = pd.read_csv(train, names=column_names, skipinitialspace=True, skiprows=1)
-            self.test = pd.read_csv(test, names=column_names, skipinitialspace=True, skiprows=1)
+        try:
+            if not together:
+                self.train = pd.read_csv(train, names=column_names, skipinitialspace=True, skiprows=1)
+                self.test = pd.read_csv(test, names=column_names, skipinitialspace=True, skiprows=1)
+                
+                self.train.isna().sum()
+                self.train = self.train.dropna()
+                self.test.isna().sum()
+                self.test = self.train.dropna()
+            else:
+                # data = pd.read_csv(train, names=column_names,
+                #               na_values='?', comment='\t',
+                #               sep=' ', skipinitialspace=True)
+                data = pd.read_csv(train, names=column_names, skipinitialspace=True, skiprows=1)
+                self.train = data.sample(frac=0.8, random_state=0)
+                self.test = data.drop(self.train.index)
+
             self.train.isna().sum()
             self.train = self.train.dropna()
             self.test.isna().sum()
             self.test = self.train.dropna()
-        else:
-            # data = pd.read_csv(train, names=column_names,
-            #               na_values='?', comment='\t',
-            #               sep=' ', skipinitialspace=True)
-            data = pd.read_csv(train, names=column_names, skipinitialspace=True, skiprows=1)
-            data.isna().sum()
-            data = data.dropna()
-            self.train = data.sample(frac=0.8, random_state=0)
-            self.test = data.drop(self.train.index)
+        except FileNotFoundError:
+            # CSVData.write_err("ERROR: The file you provided could not be found. Please ensure the path is correct.") 
+            with open('results.txt', 'w+') as f:
+                f.write('ERROR: The file you provided could not be found. Please ensure the path is correct.') 
+            # sys.exit()      
             
     def get_features(self):
         return self.train.shape[1]
@@ -49,3 +56,27 @@ class CSVData:
 
     def get_num_cols(self):
         return self.num_cols
+
+    @staticmethod
+    def write_err(err):
+        print(err)
+        with open('results.txt', 'w+') as f:
+            f.write(str(err))
+
+    @staticmethod
+    def isItClassification(data, col):
+        vals = []
+        for i in data[col]:
+            try:
+                if vals.index(i):
+                    continue
+            except ValueError:
+                vals.append(i)
+
+        if len(vals) < len(data[col]) / 4:
+            return True
+        return False  
+
+    @staticmethod
+    def numOfClassifications(data, responding):
+        return data[responding].unique()
