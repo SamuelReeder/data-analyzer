@@ -1,61 +1,48 @@
 import pandas as pd
 import numpy as np
+from tensorflow.keras.preprocessing.text import Tokenizer
 import sys
 
 class CSVData:
 
-    def __init__(self, train, test, together):
-        # column_names = ['MPG', 'Cylinders', 'Displacement', 'Horsepower', 'Weight',
-        #         'Acceleration', 'ModelYear', 'Origin']
+    def __init__(self, train, test, together, responding):
         column_names = pd.read_csv(train, nrows=1).columns.tolist()
-
         try:
             if not together:
-                self.train = pd.read_csv(train, names=column_names, skipinitialspace=True, skiprows=1)
-                self.test = pd.read_csv(test, names=column_names, skipinitialspace=True, skiprows=1)
-                
-                self.train.isna().sum()
-                self.train = self.train.dropna()
-                self.test.isna().sum()
-                self.test = self.train.dropna()
+                temp_train = pd.read_csv(train, names=column_names, skipinitialspace=True, skiprows=1)
+                temp_test = pd.read_csv(test, names=column_names, skipinitialspace=True, skiprows=1)
+                arr = [temp_train, temp_test]
+                data = pd.concat(arr)
             else:
-                # data = pd.read_csv(train, names=column_names,
-                #               na_values='?', comment='\t',
-                #               sep=' ', skipinitialspace=True)
                 data = pd.read_csv(train, names=column_names, skipinitialspace=True, skiprows=1)
-                self.train = data.sample(frac=0.8, random_state=0)
-                self.test = data.drop(self.train.index)
-
-            self.train.isna().sum()
-            self.train = self.train.dropna()
-            self.test.isna().sum()
-            self.test = self.train.dropna()
+                
+            data.isna().sum()
+            data = data.dropna()
+            print(data[responding].dtype)
+            if data[responding].dtype == object:
+                data[responding], self.key = CSVData.tokenize(data[responding])
+            else:
+                self.key = {i:i for i in data[responding].unique()}
+            
+            self.train, self.test = np.split(data.sample(frac=1), [int(0.9*len(data))])
+            print(self.train)
+            print(self.test)
+            print(self.key)
         except FileNotFoundError:
+            print("Stop")
             # CSVData.write_err("ERROR: The file you provided could not be found. Please ensure the path is correct.") 
             with open('results.txt', 'w+') as f:
                 f.write('ERROR: The file you provided could not be found. Please ensure the path is correct.') 
             # sys.exit()      
             
-    def get_features(self):
-        return self.train.shape[1]
-
-    def get_entries(self):
-        return self.train.shape[0]
-
-    def get_responding(self, responding):
-        return self.train[responding]
-
     def get_train(self):
         return self.train
 
     def get_test(self):
         return self.test
-
-    def get_text_cols(self):
-        return self.text_cols
-
-    def get_num_cols(self):
-        return self.num_cols
+    
+    def get_key(self):            
+        return self.key
 
     @staticmethod
     def write_err(err):
@@ -72,11 +59,24 @@ class CSVData:
                     continue
             except ValueError:
                 vals.append(i)
-
-        if len(vals) < len(data[col]) / 4:
+        print(len(vals))
+        print(len(data[col]))
+        if len(vals) < 100:
             return True
         return False  
 
     @staticmethod
     def numOfClassifications(data, responding):
         return data[responding].unique()
+    
+    @staticmethod
+    def tokenize(col):
+        myTokenizer = Tokenizer(num_words=100)
+        myTokenizer.fit_on_texts(col)
+        sequences = myTokenizer.texts_to_sequences(col)
+
+        arr = []
+        for i, num in enumerate(sequences):
+            arr.append(num[0])
+        
+        return arr, myTokenizer.word_index

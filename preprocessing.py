@@ -11,16 +11,12 @@ class PreProcessing (csv.CSVData):
 
     def __init__(self, responding, train, test, together):
 
-        csv.CSVData.__init__(self, train, test, together)
-
+        csv.CSVData.__init__(self, train, test, together, responding)
+        self.key = self.get_key()
         self.responding = responding
         self.together= together
         self.train = self.get_train()
         self.test = self.get_test()
-        # text_vector = layers.TextVectorization()
-        # layers.adapt
-        # self.train[responding], key1 = self.tokenize(self.train[responding])
-        # self.test[responding], key2 = self.tokenize(self.test[responding])
         self.features = self.train.copy()
         self.labels = self.features.pop(responding) 
         self.test_features = self.test.copy()
@@ -29,10 +25,12 @@ class PreProcessing (csv.CSVData):
     def defineInput(self, responding):
 
         self.inputs = {}
+        self.string_inputs = []
         for name, column in (self.train.items() if responding else self.features.items()):
             dtype = column.dtype
             if dtype == object:
                 dtype = tf.string
+                self.string_inputs.append(name)
             else:
                 dtype = tf.float32
 
@@ -41,11 +39,9 @@ class PreProcessing (csv.CSVData):
         self.numeric_inputs = {name:input for name,input in self.inputs.items()
                   if input.dtype==tf.float32}
 
-        return self.inputs, self.numeric_inputs
+        return self.inputs, self.numeric_inputs, self.string_inputs
 
     def preprocess(self):
-
-        # possibly use text vectorization 
 
         x = layers.Concatenate()(list(self.numeric_inputs.values()))
         norm = layers.Normalization()
@@ -71,19 +67,7 @@ class PreProcessing (csv.CSVData):
         temp_dict = {name: np.array(value) 
                  for name, value in features.items()}
         lower_dimension_dict =  {name:values[:1] for name, values in temp_dict.items()}
-        print(temp_dict)
         return temp_dict, lower_dimension_dict
-
-    def tokenize(self, col):
-        myTokenizer = Tokenizer(num_words=100)
-        myTokenizer.fit_on_texts(col)
-        sequences = myTokenizer.texts_to_sequences(col)
-
-        arr = []
-        for i, num in enumerate(sequences):
-            arr.append(num[0])
-        
-        return arr, myTokenizer.word_index
 
     def df_to_dataset(self, dataframe, shuffle=True, batch_size=32):
         dataframe = dataframe.copy()

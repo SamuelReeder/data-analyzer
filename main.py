@@ -1,29 +1,33 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import sys
-import tensorflow as tf
+from csvdata import CSVData
 import preprocessing as p
 import numpy as np
+import tensorflow as tf
+from tensorflow import keras
 from tensorflow.keras import layers
-from tensorflow import feature_column
 
 
 if sys.argv[1] == "test":
-  training = 'https://storage.googleapis.com/tf-datasets/titanic/train.csv'
-  testing = 'https://storage.googleapis.com/tf-datasets/titanic/eval.csv'
-  responsive = "fare"
-  alg = "Regression"
-  epochs = 7
-
-  # training = 'C:/Users/samue/Downloads/epidemiology.csv'
-  # testing = None
-  # responsive = "new_recovered"
-  # alg = "Regression"
+  # training = 'https://storage.googleapis.com/tf-datasets/titanic/train.csv'
+  # testing = 'https://storage.googleapis.com/tf-datasets/titanic/eval.csv'
+  training = 'C:/Users/Sam/Downloads/train.csv'
+  testing = 'C:/Users/Sam/Downloads/eval.csv'
+  responsive = "survived"
+  alg = "Optimization"
+  epochs = 10
 elif sys.argv[1] == "test2":
-  training = "http://archive.ics.uci.edu/ml/machine-learning-databases/auto-mpg/auto-mpg.data"
-  testing = ""
-  responsive = "MPG"
-  alg = "Optimize"
+  training = "C:/Users/Sam/Downloads/auto-mpg.data"
+  # training = "C:/Users/Sam/Downloads/taxi-fares.csv"
+  testing = None
+  responsive = "fare_amount"
+  alg = "Regression"
+  epochs = 10
+elif sys.argv[1] == "test3":
+  training = "C:/Users/Sam/Downloads/attacking.csv"
+  testing = None
+  responsive = "position"
+  alg = "Optimization"
+  epochs = 10
 else:
   training = sys.argv[1]
   testing = None
@@ -38,34 +42,78 @@ else:
 
 d = p.PreProcessing(responsive, training, testing, True if testing is None else False)
 
-r_inputs, r_numeric_inputs = d.defineInput(True)
+r_inputs, r_numeric_inputs, r_string_inputs = d.defineInput(True)
 
+learning_rate = 0.001
+dropout_rate = 0.1
 
-def model(preprocessing_head, inputs):
+path = 'models/new_model'
 
+def sparse_model(preprocessing_head, inputs):
     body = tf.keras.Sequential([
-      layers.Dense(64),
-      # layers.Dense(len(d.train.columns), activation="relu"),
-      layers.Dense(1)
+      layers.Dense(32, activation="relu"),
+      layers.Dropout(dropout_rate),
+      layers.Dense(32, activation="relu"),
+      layers.Dropout(dropout_rate),
+      layers.Dense(len(d.labels.unique()) + 1, activation="softmax")
     ])
 
     preprocessed_inputs = preprocessing_head(inputs)
     result = body(preprocessed_inputs)
+        
     temp_model = tf.keras.Model(inputs, result)
 
-    temp_model.compile(loss=tf.losses.BinaryCrossentropy(from_logits=True),
-                  optimizer=tf.optimizers.Adam())
+    temp_model.compile(
+        optimizer=keras.optimizers.Adam(learning_rate=learning_rate),
+        loss=keras.losses.SparseCategoricalCrossentropy(),
+        metrics=[keras.metrics.SparseCategoricalAccuracy()],
+    )
+     
     return temp_model
 
+def binary_model(preprocessing_head, inputs):
+  body = tf.keras.Sequential([
+      layers.Dense(32, activation="relu"),
+      layers.Dropout(0.1),
+      layers.Dense(32, activation="relu"),
+      layers.Dropout(0.1),
+      layers.Dense(1)
+  ])
+  
+  preprocessed_inputs = preprocessing_head(inputs)
+  result = body(preprocessed_inputs)
+        
+  temp_model = tf.keras.Model(inputs, result)
+  
+  temp_model.compile(loss=tf.losses.BinaryCrossentropy(from_logits=True),
+                  optimizer=tf.optimizers.Adam(learning_rate=learning_rate),
+                  metrics=["accuracy"])
+  
+  return temp_model
+
+def regression_model(norm):
+  temp_model = tf.keras.Sequential([
+      norm,
+      layers.Dense(64, activation='relu'),
+      layers.Dense(64, activation='relu'),
+      layers.Dense(1)
+  ])
+
+  temp_model.compile(loss=tf.keras.losses.MeanAbsoluteError(),
+                optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
+                metrics=["accuracy"])
+  
+  return temp_model
+
 def trainClassificationNeuralNet(d):
-
-  inputs, numeric_inputs = d.defineInput(False)
-
-  # print(inputs)
+  
+  binary = True
+  if len(d.train[responsive].unique()) > 2:
+    binary = False
+    
+  inputs, numeric_inputs, string_inputs = d.defineInput(False)
 
   preprocessed_inputs = d.preprocess()
-
-  # print(preprocessed_inputs)
 
   preprocessing = tf.keras.Model(inputs, preprocessed_inputs)
 
@@ -75,75 +123,52 @@ def trainClassificationNeuralNet(d):
 
   test_features_dict, test_feat_dict = d.defineFeaturesDict(d.test_features)
 
-  class_model = model(preprocessing, inputs)
-  class_model.fit(x=features_dict, y=d.labels, epochs=epochs)
+  model = binary_model(preprocessing, inputs) if binary else sparse_model(preprocessing, inputs)
+  model.fit(x=features_dict, y=d.labels, epochs=epochs)
 
-  results = class_model.evaluate(x=features_dict, y=d.labels, batch_size=128)
-  print(results)
-
-  class_model.save('models/test_model')
-
+  loss, accuracy = model.evaluate(x=test_features_dict, y=d.test_labels, batch_size=128)
+  print(loss, accuracy)
+  
   with open('results.txt', 'w+') as f:
-        f.write(str(results))
-
-def build_and_compile_model(norm):
-  model = tf.keras.Sequential([
-      norm,
-      layers.Dense(64, activation='relu'),
-      layers.Dense(64, activation='relu'),
-      layers.Dense(1)
-  ])
-
-  model.compile(loss='mean_absolute_error',
-                optimizer=tf.keras.optimizers.Adam(0.001))
-  return model
-
+        f.write(str(loss) + "\n" + str(accuracy))
+        
+  save_model(model, d.key, "Binary" if binary else "Sparse", path)
 
 def trainRegressionNeuralNet():
   normalizer = tf.keras.layers.Normalization(axis=-1)
-  normalizer.adapt(np.array(d.features))
+  print(d.features)
+  x = np.asarray(d.features).astype('float32')
+  print(x)
+  normalizer.adapt(np.array(x))
 
-  dnn_model = build_and_compile_model(normalizer)
+  model = regression_model(normalizer)
   
-  history = dnn_model.fit(
-    d.features,
+  history = model.fit(
+    x,
     d.labels,
     validation_split=0.2,
     verbose=0, epochs=epochs)
-  
-  test_results = {}
 
-  test_results['dnn_model'] = dnn_model.evaluate(d.test_features, d.test_labels, verbose=0)
+  loss, accuracy = model.evaluate(d.test_features, d.test_labels, verbose=0)
+  print(loss, accuracy)
 
   test = 1
-  print(d.test_features[:test])
 
-  test_predictions = dnn_model.predict(d.test_features[:test])
+  test_predictions = model.predict(d.test_features[:test])
 
   print(test_predictions)
+  
+  with open('results.txt', 'w+') as f:
+    f.write(str(loss + "\n" + accuracy))
 
-  dnn_model.save('models/test_dnn_model')
+  save_model(model, d.key, "Regression", path)
 
-def trainAlternate():
-  batch_size = 5
-  train_ds = d.df_to_dataset(d.train, batch_size=batch_size)
-  # val_ds = df_to_dataset(d.val, shuffle=False, batch_size=batch_size)
-  test_ds = d.df_to_dataset(d.test, shuffle=False, batch_size=batch_size)
-  example_batch = next(iter(train_ds))[0]
-
-  print(train_ds)
-
-  def demo(feature_column):
-    feature_layer = layers.DenseFeatures(feature_column)
-    print(feature_layer(example_batch).numpy())
-
-  # photo_count = feature_column.numeric_column('fare')
-  # demo(photo_count)
-
-
-
-if r_inputs[responsive].dtype == 'float32' and (alg == 'Regression' or alg == 'Optimize') and not p.PreProcessing.isItClassification(d.train, responsive):
+def save_model(model, key, nn_type, path):
+  model.save(path)
+  with open(path + '/config.txt', 'w+') as f:
+        f.write(str(nn_type) + "\n" + str(key))
+  
+if r_inputs[responsive].dtype == 'float32' and (alg == 'Regression' or alg == 'Optimize') and not CSVData.isItClassification(d.train, responsive):
   trainRegressionNeuralNet()
 else:
-  # trainClassificationNeuralNet(d)
-  trainAlternate()
+  trainClassificationNeuralNet(d)
