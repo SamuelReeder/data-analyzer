@@ -1,3 +1,4 @@
+from array import array
 import csvdata as csv
 import enum
 
