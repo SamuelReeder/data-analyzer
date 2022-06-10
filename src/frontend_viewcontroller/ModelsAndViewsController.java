@@ -10,9 +10,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JProgressBar;
+import javax.swing.SwingWorker;
 
 /**
  *
@@ -61,17 +64,22 @@ public class ModelsAndViewsController {
 
             theMainViewDisplay.updateBackend();
             
+//            theMainViewDisplay.trainingOutput("The model is currently training through " + theBackendModel.theModel.getEpochs() + " epochs...");
+            
+            theMainViewDisplay.fillProgress();
+
+            System.out.println("and nothing else");
             try {
-                theMainViewDisplay.trainingOutput("The model is currently training through 10 epochs...");
                 theBackendModel.theModel.trainModel();
                 if (theBackendModel.theModel.getError()) {
                     String text = theBackendModel.theModel.getErrorText();
                     theMainViewDisplay.errorDisplay((text.equals("") || text == null) ? "An unknown error occured" : text);
+//                    theMainViewDisplay.trainingOutput("");
                 } else {
-                    theMainViewDisplay.trainingOutput("The model has completed training with an accuracy of " + theBackendModel.theModel.getLoss());
+//                    theMainViewDisplay.trainingOutput("The model has completed training with an accuracy of " + theBackendModel.theModel.getAccuracy() + " and a loss of " + theBackendModel.theModel.getLoss());
                 }
             } catch (IOException err) {
-                theMainViewDisplay.trainingOutput("An error has occured");
+//                theMainViewDisplay.trainingOutput("An error has occured");
             }
             
 
@@ -126,7 +134,7 @@ public class ModelsAndViewsController {
             }
             
             System.out.println(args);
-            Python.run(args, theBackendModel.theModel.getIsWindows());
+            Python.run(args, theBackendModel.theModel.getIsWindows(), 0);
         }
     }
     

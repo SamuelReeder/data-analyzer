@@ -16,7 +16,9 @@ public class Python {
     
     private static String responsive;
     
-    public static void run(String args, boolean isWindows) {
+    private static int progress;
+    
+    public static void run(String args, boolean isWindows, int epochs) {
         
         String shell;
         String dir;
@@ -30,6 +32,8 @@ public class Python {
         try  {
             String s = null;
             
+            Python.setProgress(0);
+            
             ProcessBuilder builder = new ProcessBuilder(shell, dir, args);
             builder.redirectErrorStream(true);
             Process p = builder.start();
@@ -37,8 +41,18 @@ public class Python {
             BufferedReader input = new BufferedReader(new 
                  InputStreamReader(p.getInputStream()));
             
+            int epoch = 1;
+            String current = "";
             while ((s = input.readLine()) != null) {
                 System.out.println(s);
+                current += s;
+                if (current.contains("Epoch " + epoch + "/" + epochs) && epochs != 0) {
+//                    System.out.println("mitght be working" + epoch);
+                    double progress = (double)epoch / (double)epochs;
+                    System.out.println(progress + " " + epoch + " " + epochs);
+                    Python.setProgress(progress);
+                    epoch++;
+                }
             }
             
             System.out.println("The operation has been completed");
@@ -54,5 +68,14 @@ public class Python {
     
     public static String getResponsive() {
         return Python.responsive;
+    }
+    
+    public static void setProgress(double progress) {
+        Python.progress = (int)(Math.round(progress * 100));
+        System.out.println("set " + Python.getProgress());
+    }
+    
+    public static int getProgress() {
+        return Python.progress;
     }
 }

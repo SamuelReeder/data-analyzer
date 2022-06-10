@@ -13,7 +13,7 @@ import java.text.NumberFormat;
  */
 public class Information {
     
-    private String training, testing, responding, path, prediction, alg, loss, errorText;
+    private String training, testing, responding, path, prediction, alg, loss, accuracy, errorText;
         
     private int epochs; 
     
@@ -54,7 +54,13 @@ public class Information {
     public void setLoss(String loss) {
         NumberFormat fmt = NumberFormat.getPercentInstance();
         fmt.setMaximumFractionDigits(1);
-        this.loss = fmt.format(1 - Double.parseDouble(loss));
+        this.loss = fmt.format(Double.parseDouble(loss));
+    }
+    
+    public void setAccuracy(String accuracy) {
+        NumberFormat fmt = NumberFormat.getPercentInstance();
+        fmt.setMaximumFractionDigits(1);
+        this.accuracy = fmt.format(Double.parseDouble(accuracy));
     }
     
     public void setEpochs(String epochs) {
@@ -103,6 +109,10 @@ public class Information {
     
     public String getLoss() {
         return this.loss;
+    }
+    
+    public String getAccuracy() {
+        return this.accuracy;
     }
     
     public int getEpochs() {

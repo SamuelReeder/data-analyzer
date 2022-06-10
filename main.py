@@ -3,15 +3,17 @@ from csvdata import CSVData
 import preprocessing as p
 import numpy as np
 import tensorflow as tf
-from tensorflow import keras
 from tensorflow.keras import layers
+# import os
+# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' 
+# tf.get_logger().setLevel('INFO')
 
 
 if sys.argv[1] == "test":
-  # training = 'https://storage.googleapis.com/tf-datasets/titanic/train.csv'
-  # testing = 'https://storage.googleapis.com/tf-datasets/titanic/eval.csv'
-  training = 'C:/Users/Sam/Downloads/train.csv'
-  testing = 'C:/Users/Sam/Downloads/eval.csv'
+  training = 'https://storage.googleapis.com/tf-datasets/titanic/train.csv'
+  testing = 'https://storage.googleapis.com/tf-datasets/titanic/eval.csv'
+  # training = 'C:/Users/Sam/Downloads/train.csv' 
+  # testing = 'C:/Users/Sam/Downloads/eval.csv'
   responsive = "survived"
   alg = "Optimization"
   epochs = 10
@@ -64,9 +66,9 @@ def sparse_model(preprocessing_head, inputs):
     temp_model = tf.keras.Model(inputs, result)
 
     temp_model.compile(
-        optimizer=keras.optimizers.Adam(learning_rate=learning_rate),
-        loss=keras.losses.SparseCategoricalCrossentropy(),
-        metrics=[keras.metrics.SparseCategoricalAccuracy()],
+        optimizer=tf.optimizers.Adam(learning_rate=learning_rate),
+        loss=tf.losses.SparseCategoricalCrossentropy(),
+        metrics=[tf.metrics.SparseCategoricalAccuracy()],
     )
      
     return temp_model
@@ -99,8 +101,8 @@ def regression_model(norm):
       layers.Dense(1)
   ])
 
-  temp_model.compile(loss=tf.keras.losses.MeanAbsoluteError(),
-                optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
+  temp_model.compile(loss=tf.losses.MeanAbsoluteError(),
+                optimizer=tf.optimizers.Adam(learning_rate=learning_rate),
                 metrics=["accuracy"])
   
   return temp_model

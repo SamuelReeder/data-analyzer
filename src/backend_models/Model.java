@@ -38,11 +38,12 @@ public class Model extends Information {
         
         Python.setResponsive(super.getResponding());
         
-        Python.run(args, super.getIsWindows());
+        Python.run(args, super.getIsWindows(), super.getEpochs());
         
-        Scanner sc = new Scanner(new File("results.txt"));
+        File file = new File("results.txt");
+        Scanner sc = new Scanner(file);
         
-        String str = "ERROR";
+        String str = sc.nextLine();
         
         System.out.println(str);
         if (str.startsWith("ERROR")) {
@@ -52,7 +53,14 @@ public class Model extends Information {
             super.setError(true);
         } else {
             super.setLoss(str);
+            super.setAccuracy(sc.nextLine());
         }
+        
+        sc.close();
+        
+//        PrintWriter pw = new PrintWriter(file);
+//        pw.print("");
+//        pw.close();
     }
 
     public void predict() {
@@ -74,7 +82,7 @@ public class Model extends Information {
         
         System.out.println(args);
 
-        Python.run(args, super.getIsWindows());
+        Python.run(args, super.getIsWindows(), super.getEpochs());
         } catch (IOException err) {
             System.out.println(err);
         }

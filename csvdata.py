@@ -25,15 +25,9 @@ class CSVData:
                 self.key = {i:i for i in data[responding].unique()}
             
             self.train, self.test = np.split(data.sample(frac=1), [int(0.9*len(data))])
-            print(self.train)
-            print(self.test)
-            print(self.key)
         except FileNotFoundError:
-            print("Stop")
-            # CSVData.write_err("ERROR: The file you provided could not be found. Please ensure the path is correct.") 
-            with open('results.txt', 'w+') as f:
-                f.write('ERROR: The file you provided could not be found. Please ensure the path is correct.') 
-            # sys.exit()      
+            CSVData.write_err("ERROR: The file you provided could not be found. Please ensure the file exists and path is correct.") 
+            sys.exit()      
             
     def get_train(self):
         return self.train
