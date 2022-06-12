@@ -17,15 +17,10 @@ import java.util.Scanner;
  */
 public class Model extends Information {
 
-    public String path;
-    public String consoleOutput;
+    public String path, consoleOutput, output, prediction, errorText;
     public String[] vars;
-    public String output;
-    public String prediction;
 
     public Model(String path) throws IOException {
-        
-        
         this.path = path;
         this.consoleOutput = "";
     }
@@ -34,19 +29,38 @@ public class Model extends Information {
 
         String args;
         if (super.getIsWindows()) {
-            args = ".\\venv\\Scripts\\activate && python main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getAlg() + " " + super.getEpochs() + " " + super.getResponding();
+            args = ".\\venv\\Scripts\\activate && python main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getAlg() + " " + super.getEpochs() + " " + super.getResponding() + " " + super.getSave();
         } else {
-            args = "source ./venv/bin/activate && python3 main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getAlg() + " " + super.getEpochs() + " " + super.getResponding();
+            args = "source ./venv/bin/activate && python3 main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getAlg() + " " + super.getEpochs() + " " + super.getResponding() + " " + super.getSave();
         } 
         
         System.out.println(args);
         
         Python.setResponsive(super.getResponding());
         
-        Python.run(args, super.getIsWindows());
+        Python.run(args, super.getIsWindows(), super.getEpochs());
         
-        Scanner sc = new Scanner(new File("results.txt"));
-        super.setLoss(sc.nextLine());
+        File file = new File("results.txt");
+        Scanner sc = new Scanner(file);
+        
+        String str = sc.nextLine();
+        
+        System.out.println(str);
+        if (str.startsWith("ERROR")) {
+            super.setError(true);
+            super.setErrorText(str);
+        } else if (str == null || str.trim().equals("")) {
+            super.setError(true);
+        } else {
+            super.setLoss(str);
+            super.setAccuracy(sc.nextLine());
+        }
+        
+        sc.close();
+        
+//        PrintWriter pw = new PrintWriter(file);
+//        pw.print("");
+//        pw.close();
     }
 
     public void predict() {
@@ -68,7 +82,7 @@ public class Model extends Information {
         
         System.out.println(args);
 
-        Python.run(args, super.getIsWindows());
+        Python.run(args, super.getIsWindows(), super.getEpochs());
         } catch (IOException err) {
             System.out.println(err);
         }

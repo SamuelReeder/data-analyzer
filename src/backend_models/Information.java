@@ -13,11 +13,11 @@ import java.text.NumberFormat;
  */
 public class Information {
     
-    private String training, testing, responding, path, prediction, alg, loss;
+    private String training, testing, responding, path, prediction, alg, loss, accuracy, errorText, savedName;
         
     private int epochs; 
     
-    private boolean isWindows;
+    private boolean isWindows, error = false;
     
     public Information() {
        if (System.getProperty("os.name").startsWith("Windows")) {
@@ -54,11 +54,33 @@ public class Information {
     public void setLoss(String loss) {
         NumberFormat fmt = NumberFormat.getPercentInstance();
         fmt.setMaximumFractionDigits(1);
-        this.loss = fmt.format(1 - Double.parseDouble(loss));
+        this.loss = fmt.format(Double.parseDouble(loss));
+    }
+    
+    public void setAccuracy(String accuracy) {
+        NumberFormat fmt = NumberFormat.getPercentInstance();
+        fmt.setMaximumFractionDigits(1);
+        this.accuracy = fmt.format(Double.parseDouble(accuracy));
     }
     
     public void setEpochs(String epochs) {
-        this.epochs = Integer.parseInt(epochs);
+        try {
+            this.epochs = Integer.parseInt(epochs);
+        } catch (NumberFormatException e) {
+            this.epochs= 10;
+        }
+    }
+    
+    public void setError(boolean err) {
+        this.error = err;
+    }
+    
+    public void setErrorText(String errText) {
+        this.errorText = errText;
+    }
+    
+    public void setSave(String name) {
+        this.savedName = name;
     }
     
     public String getTraining() {
@@ -93,7 +115,23 @@ public class Information {
         return this.loss;
     }
     
+    public String getAccuracy() {
+        return this.accuracy;
+    }
+    
     public int getEpochs() {
         return this.epochs;
+    }
+    
+    public boolean getError() {
+        return this.error;
+    }
+    
+    public String getErrorText(){
+        return this.errorText;
+    }
+    
+    public String getSave(){
+        return this.savedName;
     }
 }
