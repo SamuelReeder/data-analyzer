@@ -13,7 +13,7 @@ import java.text.NumberFormat;
  */
 public class Information {
     
-    private String training, testing, responding, path, prediction, alg, loss, accuracy, errorText;
+    private String training, testing, responding, path, prediction, alg, loss, accuracy, errorText, savedName;
         
     private int epochs; 
     
@@ -79,6 +79,10 @@ public class Information {
         this.errorText = errText;
     }
     
+    public void setSave(String name) {
+        this.savedName = name;
+    }
+    
     public String getTraining() {
         return this.training;
     }
@@ -125,5 +129,9 @@ public class Information {
     
     public String getErrorText(){
         return this.errorText;
+    }
+    
+    public String getSave(){
+        return this.savedName;
     }
 }

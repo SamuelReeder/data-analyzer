@@ -7,6 +7,7 @@ class CSVData:
 
     def __init__(self, train, test, together, responding):
         column_names = pd.read_csv(train, nrows=1).columns.tolist()
+        column_names = [str(x).lower() for x in column_names]
         try:
             if not together:
                 temp_train = pd.read_csv(train, names=column_names, skipinitialspace=True, skiprows=1)
@@ -18,11 +19,10 @@ class CSVData:
                 
             data.isna().sum()
             data = data.dropna()
-            print(data[responding].dtype)
             if data[responding].dtype == object:
                 data[responding], self.key = CSVData.tokenize(data[responding])
             else:
-                self.key = {i:i for i in data[responding].unique()}
+                self.key = {str(i):i for i in data[responding].unique()}
             
             self.train, self.test = np.split(data.sample(frac=1), [int(0.9*len(data))])
         except FileNotFoundError:
@@ -40,7 +40,6 @@ class CSVData:
 
     @staticmethod
     def write_err(err):
-        print(err)
         with open('results.txt', 'w+') as f:
             f.write(str(err))
 
@@ -53,8 +52,6 @@ class CSVData:
                     continue
             except ValueError:
                 vals.append(i)
-        print(len(vals))
-        print(len(data[col]))
         if len(vals) < 100:
             return True
         return False  

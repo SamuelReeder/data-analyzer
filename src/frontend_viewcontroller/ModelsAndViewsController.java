@@ -25,7 +25,20 @@ public class ModelsAndViewsController {
 
     BackendModelSetup theBackendModel;
     MainViewDisplay theMainViewDisplay;
+    
+    private class ClearAction implements ActionListener {
 
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            try {
+                theBackendModel.theModel = new Model("");
+                theMainViewDisplay.clear();
+            } catch (IOException ex) {
+                Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
     private class ImportModelAction implements ActionListener {
 
         @Override
@@ -74,12 +87,12 @@ public class ModelsAndViewsController {
                 if (theBackendModel.theModel.getError()) {
                     String text = theBackendModel.theModel.getErrorText();
                     theMainViewDisplay.errorDisplay((text.equals("") || text == null) ? "An unknown error occured" : text);
-//                    theMainViewDisplay.trainingOutput("");
+                    theMainViewDisplay.trainingOutput("");
                 } else {
-//                    theMainViewDisplay.trainingOutput("The model has completed training with an accuracy of " + theBackendModel.theModel.getAccuracy() + " and a loss of " + theBackendModel.theModel.getLoss());
+                    theMainViewDisplay.trainingOutput("The model has completed training with an accuracy of " + theBackendModel.theModel.getAccuracy() + " and a loss of " + theBackendModel.theModel.getLoss());
                 }
             } catch (IOException err) {
-//                theMainViewDisplay.trainingOutput("An error has occured");
+                theMainViewDisplay.trainingOutput("An error has occured");
             }
             
 

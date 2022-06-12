@@ -44,9 +44,9 @@ class PreProcessing (csv.CSVData):
     def preprocess(self):
 
         x = layers.Concatenate()(list(self.numeric_inputs.values()))
-        norm = layers.Normalization()
-        norm.adapt(np.array(self.train[self.numeric_inputs.keys()]))
-        all_numeric_inputs = norm(x)
+        self.norm = layers.Normalization(axis=-1)
+        self.norm.adapt(np.array(self.train[self.numeric_inputs.keys()]))
+        all_numeric_inputs = self.norm(x)
 
         preprocessed_inputs = [all_numeric_inputs]
 
