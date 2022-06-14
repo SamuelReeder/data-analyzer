@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -79,7 +81,7 @@ public class ModelsAndViewsController {
             
 //            theMainViewDisplay.trainingOutput("The model is currently training through " + theBackendModel.theModel.getEpochs() + " epochs...");
             
-            theMainViewDisplay.fillProgress();
+            theMainViewDisplay.startThread();
 
             System.out.println("and nothing else");
             try {
@@ -184,6 +186,12 @@ public class ModelsAndViewsController {
         this.theMainViewDisplay.infoButton.addActionListener(new InfoAction());
         this.theMainViewDisplay.setup.addActionListener(new SetupAction());
         this.theMainViewDisplay.epochs.addKeyListener(new Key());
-//        this.theMainViewDisplay.alg.addActionListener(new AlgAction());
+        this.theMainViewDisplay.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                System.exit(0);
+            }
+        });
     }
 }

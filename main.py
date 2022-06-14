@@ -14,8 +14,8 @@ if sys.argv[1] == "test":
   testing = 'https://storage.googleapis.com/tf-datasets/titanic/eval.csv'
   # training = 'C:/Users/Sam/Downloads/train.csv' 
   # testing = 'C:/Users/Sam/Downloads/eval.csv'
-  responsive = "fare"
-  alg = "Regression"
+  responsive = "class"
+  alg = "Classification"
   epochs = 14
 elif sys.argv[1] == "test2":
   training = "C:/Users/Sam/Downloads/auto-mpg.csv"

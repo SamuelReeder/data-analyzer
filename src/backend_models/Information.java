@@ -80,10 +80,14 @@ public class Information {
     }
     
     public void setSave(String name) {
-        this.savedName = name;
+        if (name.trim() == null || name.trim() == "") {
+            this.savedName = "my_model";
+        } else {
+            this.savedName = name;
+        }
     }
     
-    public String getTraining() {
+    public String getTraining() {   
         return this.training;
     }
     

@@ -344,10 +344,10 @@ public class MainViewDisplay extends JFrame {
         this.pack();
     }
 
-    public void fillProgress() {
-        GeneralProgressBar worker = new GeneralProgressBar();
-        worker.execute();
-    }
+//    public void fillProgress() {
+//        GeneralProgressBar worker = new GeneralProgressBar();
+//        worker.execute();
+//    }
     
     public void u(int i) {
         this.progressBar.setValue(i);
@@ -490,5 +490,63 @@ public class MainViewDisplay extends JFrame {
         }
 
         return null;
+    }
+    
+    public void startThread()
+    {
+  
+        SwingWorker sw1 = new SwingWorker() {
+            // Method
+            @Override
+            protected String doInBackground()
+                throws Exception
+            {
+  
+                // Defining what thread will do here
+                for (int i = 0; i <= 100; i++) {
+                    Thread.sleep(100);
+                    System.out.println("Value in thread : " + i);
+                    publish(i);
+                }
+  
+                String res = "Finished Execution";
+                return res;
+            }
+  
+            // Method
+            @Override protected void process(List chunks)
+            {
+                // define what the event dispatch thread
+                // will do with the intermediate results
+                // received while the thread is executing
+                int val = (int)chunks.get(chunks.size() - 1);
+  
+                progressField.setText(String.valueOf(val));
+                progressBar.setValue(val);
+            }
+  
+            // Method
+            @Override protected void done()
+            {
+                // this method is called when the background
+                // thread finishes execution
+//                try {
+//                    String statusMsg = get();
+//                    System.out.println(
+//                        "Inside done function");
+//                    statusLabel.setText(statusMsg);
+//                }
+//                catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                catch (ExecutionException e) {
+//                    e.printStackTrace();
+//                }
+                progressField.setText("Done");
+            }
+        };
+  
+        // Executes the swingworker on worker thread
+        sw1.execute();
     }
 }
