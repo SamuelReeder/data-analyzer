@@ -6,16 +6,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.BufferedReader;
-import java.io.File;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JProgressBar;
-import javax.swing.SwingWorker;
 
 /**
  *
@@ -25,28 +23,27 @@ public class ModelsAndViewsController {
 
     BackendModelSetup theBackendModel;
     MainViewDisplay theMainViewDisplay;
-    
+
     private class ClearAction implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
             try {
-                theBackendModel.theModel = new Model("");
+                theBackendModel.theModel = new Model("", theMainViewDisplay);
                 theMainViewDisplay.clear();
             } catch (IOException ex) {
                 Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
-    
+
     private class ImportModelAction implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
             try {
-                theBackendModel.theModel = new Model("");
+                theBackendModel.theModel = new Model("", theMainViewDisplay);
                 theBackendModel.theModel.setPath(theMainViewDisplay.showOpenDialog());
-                System.out.println(theBackendModel.theModel.getPath());
                 theMainViewDisplay.updateImport(theBackendModel.theModel.getPath());
             } catch (IOException ex) {
                 Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
@@ -54,48 +51,49 @@ public class ModelsAndViewsController {
         }
     }
 
-    private class SaveModelToFileAction implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent ae) {
-//      Saves the trained model, such that it can be
-//      imported and used again without any extra 
-//      training necessary.
-        }
-    }
-
     private class TrainAction implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
-
+            theMainViewDisplay.clearForTraining();
+            theMainViewDisplay.disableFunctionality();
             try {
-                theBackendModel.theModel = new Model("");
+                theBackendModel.theModel = new Model("", theMainViewDisplay);
             } catch (IOException ex) {
                 Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             theMainViewDisplay.updateBackend();
-            
-//            theMainViewDisplay.trainingOutput("The model is currently training through " + theBackendModel.theModel.getEpochs() + " epochs...");
-            
-            theMainViewDisplay.fillProgress();
-
-            System.out.println("and nothing else");
-            try {
-                theBackendModel.theModel.trainModel();
-                if (theBackendModel.theModel.getError()) {
-                    String text = theBackendModel.theModel.getErrorText();
-                    theMainViewDisplay.errorDisplay((text.equals("") || text == null) ? "An unknown error occured" : text);
-                    theMainViewDisplay.trainingOutput("");
-                } else {
-                    theMainViewDisplay.trainingOutput("The model has completed training with an accuracy of " + theBackendModel.theModel.getAccuracy() + " and a loss of " + theBackendModel.theModel.getLoss());
+            theBackendModel.theModel.trainModel();
+            theBackendModel.theModel.current.addPropertyChangeListener(new PropertyChangeListener() {
+                @Override
+                public void propertyChange(PropertyChangeEvent evt) {
+                    String name = evt.getPropertyName();
+                    if (name.equals("state")) {
+                        switch (theBackendModel.theModel.current.getState()) {
+                            case DONE:
+                                try {
+                                    cont();
+                                } catch (IOException ex) {
+                                    Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                        }
+                    }
                 }
-            } catch (IOException err) {
-                theMainViewDisplay.trainingOutput("An error has occured");
-            }
-            
+            });
+        }
 
+        public void cont() throws IOException {
+            theBackendModel.theModel.contBackend();
+            if (theBackendModel.theModel.getError()) {
+                String text = theBackendModel.theModel.getErrorText().trim();
+                String error = (text.equals("") || text == null) ? "An unknown error occured" : text;
+                theMainViewDisplay.errorDisplay(error);
+                theMainViewDisplay.trainingOutput(error);
+            } else {
+                theMainViewDisplay.trainingOutput(theBackendModel.theModel.getOutput());
+            }
+            theMainViewDisplay.enableFunctionality();
         }
     }
 
@@ -103,20 +101,46 @@ public class ModelsAndViewsController {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
+            theMainViewDisplay.clearForPrediction();
+            theMainViewDisplay.disableFunctionality();
             if (theBackendModel.theModel == null) {
                 System.out.println("Model is null");
                 return;
             }
             theMainViewDisplay.getPrediction();
-            theBackendModel.theModel.predict();
-            
-            try {
-                Scanner sc = new Scanner(new File("results.txt"));
-                theBackendModel.theModel.output = "Variable: "  + (theBackendModel.theModel.getResponsive() != null ? theBackendModel.theModel.getResponsive() : "unknown") + ", has a " + sc.nextLine() + "% probability.";
-                theMainViewDisplay.updateTextContentField();
-            } catch (IOException err) {
-                System.out.println(err);
+            if (theBackendModel.theModel.getPath().equals("") || theBackendModel.theModel.getPath() == null) {
+                theBackendModel.theModel.setPath(theMainViewDisplay.importedModel.getText());
             }
+            theBackendModel.theModel.predict();
+            theBackendModel.theModel.current.addPropertyChangeListener(new PropertyChangeListener() {
+                @Override
+                public void propertyChange(PropertyChangeEvent evt) {
+                    String name = evt.getPropertyName();
+                    if (name.equals("state")) {
+                        switch (theBackendModel.theModel.current.getState()) {
+                            case DONE:
+                                try {
+                                    cont();
+                                } catch (IOException ex) {
+                                    Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                        }
+                    }
+                }
+            });
+        }
+        
+        public void cont() throws IOException {            
+            theBackendModel.theModel.contBackend();
+            if (theBackendModel.theModel.getError()) {
+                String text = theBackendModel.theModel.getErrorText();
+                String error = (text.equals("") || text == null) ? "An unknown error occured" : text;
+                theMainViewDisplay.errorDisplay(error);
+                theMainViewDisplay.predictionOutput(error);
+            } else {
+                theMainViewDisplay.predictionOutput(theBackendModel.theModel.getOutput());
+            }
+            theMainViewDisplay.enableFunctionality();
         }
     }
 
@@ -133,24 +157,39 @@ public class ModelsAndViewsController {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
-             try {
-                theBackendModel.theModel = new Model("");
+            theMainViewDisplay.clearForSetup();
+            theMainViewDisplay.disableFunctionality();
+            try {
+                theBackendModel.theModel = new Model("", theMainViewDisplay);
             } catch (IOException ex) {
                 Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
             }
-             
+
             String args;
             if (theBackendModel.theModel.getIsWindows()) {
-                args = "python -m venv .\\venv && .\\venv\\Scripts\\activate && pip install --upgrade pip && pip install -r requirements.txt";;
+                args = "python -m venv --without-pip .\\venv && .\\venv\\Scripts\\activate && pip install --upgrade pip && pip install -r requirements.txt";;
             } else {
-                args = "python3 -m venv ./venv && source ./venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt";
+                args = "python3 -m venv --without-pip ./venv && source ./venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt";
             }
-            
+
             System.out.println(args);
-            Python.run(args, theBackendModel.theModel.getIsWindows(), 0);
+            Python py = new Python(args, theBackendModel.theModel.getIsWindows(), 0, theMainViewDisplay, "setup");
+            py.addPropertyChangeListener(new PropertyChangeListener() {
+                @Override
+                public void propertyChange(PropertyChangeEvent evt) {
+                    String name = evt.getPropertyName();
+                    if (name.equals("state")) {
+                        switch (py.getState()) {
+                            case DONE:
+                                theMainViewDisplay.enableFunctionality();
+                        }
+                    }
+                }
+            });
+            py.execute();
         }
     }
-    
+
     private class Key implements KeyListener {
 
         @Override
@@ -160,7 +199,7 @@ public class ModelsAndViewsController {
 
         @Override
         public void keyTyped(KeyEvent e) {
-            if (e.getKeyChar() < 48 || e.getKeyChar() > 57 || !theMainViewDisplay.isEpochInRange()) {
+            if (e.getKeyChar() < '0' || e.getKeyChar() > '9' || !theMainViewDisplay.isEpochInRange()) {
                 theMainViewDisplay.delete();
             }
         }
@@ -184,6 +223,13 @@ public class ModelsAndViewsController {
         this.theMainViewDisplay.infoButton.addActionListener(new InfoAction());
         this.theMainViewDisplay.setup.addActionListener(new SetupAction());
         this.theMainViewDisplay.epochs.addKeyListener(new Key());
-//        this.theMainViewDisplay.alg.addActionListener(new AlgAction());
+        this.theMainViewDisplay.clear.addActionListener(new ClearAction());
+        this.theMainViewDisplay.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                System.exit(0);
+            }
+        });  
     }
 }

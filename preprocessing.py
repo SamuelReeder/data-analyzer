@@ -1,17 +1,14 @@
 import csvdata as csv
-
 import tensorflow as tf
 import numpy as np
-from tensorflow.keras import layers
-from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras import layers
 
 
 class PreProcessing (csv.CSVData):
 
-    def __init__(self, responding, train, test, together):
+    def __init__(self, responding, train, test, together, alg):
 
-        csv.CSVData.__init__(self, train, test, together, responding)
+        csv.CSVData.__init__(self, train, test, together, responding, alg)
         self.key = self.get_key()
         self.responding = responding
         self.together= together

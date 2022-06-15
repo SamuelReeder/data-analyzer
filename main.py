@@ -4,10 +4,7 @@ import preprocessing as p
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers
-# import os
-# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' 
-# tf.get_logger().setLevel('INFO')
-
+import pandas as pd
 
 if sys.argv[1] == "test":
   training = 'https://storage.googleapis.com/tf-datasets/titanic/train.csv'
@@ -19,6 +16,8 @@ if sys.argv[1] == "test":
   epochs = 14
 elif sys.argv[1] == "test2":
   training = "C:/Users/Sam/Downloads/auto-mpg.csv"
+  training = "C:/Users/Sam/Downloads/wine.csv"
+  training = "C:/Users/Sam/Downloads/Admission_Predict.csv"
   # training = "C:/Users/Sam/Downloads/jena_climate_2009_2016.csv"
   # training = "C:/Users/Sam/Downloads/taxi-fares.csv"
   testing = None
@@ -47,22 +46,26 @@ else:
   
   path = 'models/' + str(sys.argv[6])
 
-d = p.PreProcessing(responsive, training, testing, True if testing is None else False)
+try:
+  d = p.PreProcessing(responsive, training, testing, True if testing is None else False, alg)
 
-r_inputs, r_numeric_inputs, r_string_inputs = d.defineInput(True)
-
+  r_inputs, r_numeric_inputs, r_string_inputs = d.defineInput(True)
+except Exception as e:
+  with open('results.txt', 'w+') as f:
+    f.write("ERROR: " + str(e))
+  print(str(e))
+  sys.exit()
+  
 learning_rate = 0.001
 dropout_rate = 0.1
 
-# path = 'models/new_model'
-
 def sparse_model(preprocessing_head, inputs):
     body = tf.keras.Sequential([
-      layers.Dense(32, activation="relu"),
+      layers.Dense(64, activation="relu"),
       layers.Dropout(dropout_rate),
-      layers.Dense(32, activation="relu"),
+      layers.Dense(64, activation="relu"),
       layers.Dropout(dropout_rate),
-      layers.Dense(len(d.labels.unique()) + 1, activation="softmax")
+      layers.Dense(len(d.labels.unique()), activation="softmax")
     ])
 
     preprocessed_inputs = preprocessing_head(inputs)
@@ -80,10 +83,10 @@ def sparse_model(preprocessing_head, inputs):
 
 def binary_model(preprocessing_head, inputs):
   body = tf.keras.Sequential([
-      layers.Dense(32, activation="relu"),
-      layers.Dropout(0.1),
-      layers.Dense(32, activation="relu"),
-      layers.Dropout(0.1),
+      layers.Dense(64, activation="relu"),
+      layers.Dropout(dropout_rate),
+      layers.Dense(64, activation="relu"),
+      layers.Dropout(dropout_rate),
       layers.Dense(1)
   ])
   
@@ -115,9 +118,9 @@ def regression_model(preprocessing_head, inputs):
 
   body = tf.keras.Sequential([
       layers.BatchNormalization(),
-      layers.Dense(32, activation="relu"),
+      layers.Dense(64, activation="relu"),
       layers.Dropout(0.1),
-      layers.Dense(32, activation="relu"),
+      layers.Dense(64, activation="relu"),
       layers.Dropout(0.1),
       layers.Dense(1)
   ])
@@ -127,15 +130,8 @@ def regression_model(preprocessing_head, inputs):
   
   temp_model = tf.keras.Model(inputs, result)
   
-  print("Batch normalization")
-        
-  
-  
   temp_model.compile(loss=tf.losses.MeanAbsoluteError(),
                 optimizer=tf.optimizers.Adam(learning_rate=0.0001))
-  
-  # temp_model.compile(loss=tf.losses.MeanSquaredLogarithmicError(),
-  #               optimizer=tf.optimizers.RMSprop(learning_rate=0.0001))
   
   return temp_model
 
@@ -161,10 +157,10 @@ def trainClassificationNeuralNet(d):
   model.fit(x=features_dict, y=d.labels, epochs=epochs)
 
   loss, accuracy = model.evaluate(x=test_features_dict, y=d.test_labels, batch_size=128)
-  print(loss, accuracy)
   
+  result_text = "The model has completed training with an accuracy of " + str(round(accuracy * 100, 2)) + "% and a loss function of " + str(round(loss, 2))
   with open('results.txt', 'w+') as f:
-        f.write(str(loss) + "\n" + str(accuracy))
+        f.write(result_text)
         
   save_model(model, d.key, "Binary" if binary else "Sparse", path)
 
@@ -174,24 +170,15 @@ def trainRegressionNeuralNet():
   try:
     normalized = True
     normalizer = tf.keras.layers.Normalization(axis=-1)
-    print(d.features)
     x = np.asarray(d.features).astype('float32')
-    print(x)
     normalizer.adapt(np.array(x))
 
     model = alt_regression_model(normalizer)
-    
-    history = model.fit(
-      x,
-      d.labels,
-      validation_split=0.2,
-      verbose=0, epochs=epochs)
+    model.fit(x, d.labels, validation_split=0.15, epochs=epochs)
 
-    loss = model.evaluate(d.test_features, d.test_labels, verbose=0)
-    print(loss)
+    loss = model.evaluate(d.test_features, d.test_labels)
   
   except Exception:
-    
     normalized = False
     inputs, numeric_inputs, string_inputs = d.defineInput(False)
     preprocessed_inputs = d.preprocess()
@@ -203,19 +190,29 @@ def trainRegressionNeuralNet():
     model = regression_model(preprocessing, inputs)  
     model.fit(features_dict, d.labels, validation_split=0.2, epochs=epochs, batch_size=128)
     loss = model.evaluate(test_features_dict, d.test_labels)
-    print(loss)
+  
+  result_text = "A regressive approach was taken to training this model, therefore, accuracy is not applicable. However, the loss was " + str(round(loss, 2)) + "."
   
   with open('results.txt', 'w+') as f:
-    f.write(str(loss) + "\n")
+    f.write(result_text)
     
   save_model(model, None, "Regression " + str(normalized), path)
 
 def save_model(model, keys, nn_type, path):
   model.save(path)
   with open(path + '/config.txt', 'w+') as f:
-        f.write(str(nn_type) + "\n" + str("" if keys is None else keys))
-  
-if r_inputs[responsive].dtype == 'float32' and (alg == 'Regression' or alg == 'Optimize') and not CSVData.isItClassification(d.train, responsive):
-  trainRegressionNeuralNet()
-else:
-  trainClassificationNeuralNet(d)
+        f.write(str(nn_type) + "\n" + str(responsive if keys is None else keys))
+
+try:
+  if d.r_dtype != object and (alg == 'Regression' or alg == 'Optimize'):
+    print("Regression")
+    trainRegressionNeuralNet()
+  elif CSVData.isItClassification(d.train, responsive):
+    print("Classification")
+    trainClassificationNeuralNet(d)
+except Exception as e:
+  with open('results.txt', 'w+') as f:
+    f.write("ERROR: " + str(e))
+  print(str(e))
+  sys.exit()
+

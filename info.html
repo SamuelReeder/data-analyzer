@@ -11,62 +11,55 @@
         * {
             margin: 0;
             padding: 10px;
-        }
-
-        input {
-            background: none !important;
-            border: none;
-            padding: 0 !important;
             font-family: arial, sans-serif;
-            color: #069;
-            text-decoration: underline;
-            cursor: pointer;
         }
     </style>
-    <script type="text/javascript">
-        function openURL() {
-            var shell = new ActiveXObject("WScript.Shell");
-            shell.run("http://www.google.com");
-        }
-    </script>
 </head>
 
 <body>
     <section>
         <div class="container">
-            <div class="row justify-content-center" style="text-align: left;">
+            <div style="text-align: left;">
                 <h3><b>Summary</b></h3>
-                <p>This software is designed to offer various utilities to help in analyzing data and extracting
+                <p>This software is designed to offer various utilities to assist in analyzing data and extracting
                     valuable
                     conclusions.</p>
+                
+                <h4><b>Key practical knowledge</b></h4>
+                <ul>
+                    <li><b>Loss:</b> indicates how poorly a machine learning model performed in a prediction. The lower the better.</li>
+                    <li><b>Accuracy:</b> indicates how well a machine learning model performed in a prediction. It is given as a percent. The higher the better.</li>
+                    <li>This program only supports up to 25 classes in a classification dataset.</li>
+                    <li>It is recommended that you manually set the algorithm. Classification shall be used when the responsive column has distinct values. Regression shall be used when the responsive column consists of a range of numbers ex: (0 - 10) or an effectively infinite amount of values.</li>
+                    <li>There is no consistent optimal amount of epochs, it comes down to trial and error. Generally around 10 epochs offers decent results.</li>
+                    <li>The models you train will be saved in the "models" folder of the program directory. Do not modify any files associated with a model.</li>
+                </ul>
                 <h3>
                     Why?
                 </h3>
                 <p>
                     Human minds are not optimized to consider extremely large datasets and draw conclusions and
                     consequently form predictions. We consistently require technical tools such as Microsoft Excel or
-                    graphs to better understand the data. Nonetheless, humans simply cannot accurately analyze data to
-                    the to extent that computational devices can. This is one area where AI will certainly prevail.
+                    graphs to better understand data. Humans simply cannot accurately analyze data to
+                    the to extent that computational devices can, therefore, the usage of computers is extremely beneficial in this area.
                 </p>
                 <h3>
-                    How does it work?
+                    Understanding
                 </h3>
                 <p>
                     I will only delve into the conceptual aspects of its function, but feel free to preview the code and
-                    read the applicable <a href="https://www.tensorflow.org/api_docs">TensorFlow API documentation</a>
+                    read the applicable TensorFlow API documentation
                     for more practical information.<br><br>
                 </p>
                 <p>
-                    This software, backed by the concept of <a href="https://en.wikipedia.org/wiki/Deep_learning">Deep
-                        Learning</a> utilizes an <a href="https://en.wikipedia.org/wiki/Artificial_neural_network"
-                        target="_blank">Artificial Neural Network</a> to
-                    evaluate the patterns and characteristics of a provided dataset to train a Deep Learning Model.
+                    This software, backed by the concept of Deep Learning utilizes an Artificial Neural Network to
+                    evaluate the patterns and characteristics of a provided dataset to train a Deep Learning Model.<br><br>
                 </p>
                 <p>
                     An Artificial Neural Network (ANN), often referred to as a Deep Neural Network (DNN), or a Neural
                     Network (NN), is comprised of a series of layers that an input must commute through to produce an
                     output. Each of these layers consists of a number of Artificial Neurons which hold weights and fire
-                    accordingly (more later). You might notice that several of these terms are commonly used in the
+                    accordingly. You might notice that several of these terms are commonly used in the
                     fields of cognitive sciences, such as neuroscience and psychology. We too are provided input through
                     a sense, which is processed through layers of our neurological system, and actions and memories are
                     induced through the firing of particular neurons.That is no coincidence, the common objective of an
@@ -94,21 +87,6 @@
                         layer will represent the number of possible outputs.
                     </li>
                 </ol>
-
-                <h3>
-                    Types of Algorithms 
-                </h3>
-                <ul>
-                    <li>
-                        <h5>Classification</h5>
-                        <p>This algorithm is used when there is a finite amount of possible outputs for the result to be produced as. An example of this would be a neural network which may be used to classify a pet as either a cat or a dog. There are only two possible outputs and therefore it is logical to use a classification algorithm.</p>
-                    </li>
-                    <li>
-                        <h5>Regression</h5>
-                        <p></p>
-                    </li>
-                </ul>
-
                 <div style="text-align: center; margin: auto;">
                     <img
                         src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Colored_neural_network.svg/420px-Colored_neural_network.svg.png">

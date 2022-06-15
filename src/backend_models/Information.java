@@ -1,19 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package backend_models;
 
 import java.text.NumberFormat;
 
 /**
  *
- * @author samue
+ * @author sam
  */
 public class Information {
     
-    private String training, testing, responding, path, prediction, alg, loss, accuracy, errorText, savedName;
+    private String training, testing, responding, path, prediction, alg, loss, accuracy, errorText, savedName, output;
         
     private int epochs; 
     
@@ -83,6 +78,10 @@ public class Information {
         this.savedName = name;
     }
     
+    public void setOutput(String output) {
+        this.output = output;
+    }
+    
     public String getTraining() {
         return this.training;
     }
@@ -133,5 +132,9 @@ public class Information {
     
     public String getSave(){
         return this.savedName;
+    }
+    
+    public String getOutput() {
+        return this.output;
     }
 }

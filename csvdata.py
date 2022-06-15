@@ -5,9 +5,10 @@ import sys
 
 class CSVData:
 
-    def __init__(self, train, test, together, responding):
+    def __init__(self, train, test, together, responding, alg):
         column_names = pd.read_csv(train, nrows=1).columns.tolist()
-        column_names = [str(x).lower() for x in column_names]
+        column_names = [str(x).strip().lower().replace(" ", "_") for x in column_names]
+        print(column_names)
         try:
             if not together:
                 temp_train = pd.read_csv(train, names=column_names, skipinitialspace=True, skiprows=1)
@@ -19,15 +20,20 @@ class CSVData:
                 
             data.isna().sum()
             data = data.dropna()
-            if data[responding].dtype == object:
+            self.r_dtype = data[responding].dtype
+            print(alg)
+            if CSVData.isItClassification(data, responding) and alg != "Regression":
+                data[responding] = data[responding].astype(str)
                 data[responding], self.key = CSVData.tokenize(data[responding])
             else:
                 self.key = {str(i):i for i in data[responding].unique()}
             
             self.train, self.test = np.split(data.sample(frac=1), [int(0.9*len(data))])
-        except FileNotFoundError:
-            CSVData.write_err("ERROR: The file you provided could not be found. Please ensure the file exists and path is correct.") 
-            sys.exit()      
+        except FileNotFoundError as e:
+            with open('results.txt', 'w+') as i:
+                i.write("ERROR: " + str(e))
+            print(str(e))
+            sys.exit()
             
     def get_train(self):
         return self.train
@@ -39,20 +45,9 @@ class CSVData:
         return self.key
 
     @staticmethod
-    def write_err(err):
-        with open('results.txt', 'w+') as f:
-            f.write(str(err))
-
-    @staticmethod
     def isItClassification(data, col):
-        vals = []
-        for i in data[col]:
-            try:
-                if vals.index(i):
-                    continue
-            except ValueError:
-                vals.append(i)
-        if len(vals) < 100:
+        vals = data[col].unique()
+        if len(vals) < 25:
             return True
         return False  
 
@@ -65,9 +60,9 @@ class CSVData:
         myTokenizer = Tokenizer(num_words=100)
         myTokenizer.fit_on_texts(col)
         sequences = myTokenizer.texts_to_sequences(col)
-
+        
         arr = []
         for i, num in enumerate(sequences):
-            arr.append(num[0])
+            arr.append(num[0] - 1)
         
         return arr, myTokenizer.word_index

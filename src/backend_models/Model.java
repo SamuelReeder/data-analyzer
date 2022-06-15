@@ -1,15 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package backend_models;
 
+import frontend_viewcontroller.MainViewDisplay;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,100 +19,92 @@ public class Model extends Information {
 
     public String path, consoleOutput, output, prediction, errorText;
     public String[] vars;
+    public MainViewDisplay display;
+    public Python current;
 
-    public Model(String path) throws IOException {
+    public Model(String path, MainViewDisplay display) throws IOException {
         this.path = path;
         this.consoleOutput = "";
+        this.display = display;
     }
 
-    public void trainModel() throws IOException {
-
+    public void trainModel() {
         String args;
         if (super.getIsWindows()) {
             args = ".\\venv\\Scripts\\activate && python main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getAlg() + " " + super.getEpochs() + " " + super.getResponding() + " " + super.getSave();
         } else {
             args = "source ./venv/bin/activate && python3 main.py " + super.getTraining() + " " + super.getTesting() + " " + super.getAlg() + " " + super.getEpochs() + " " + super.getResponding() + " " + super.getSave();
-        } 
-        
+        }
+
         System.out.println(args);
+
+        Python py = new Python(args, super.getIsWindows(), super.getEpochs(), this.display, "train");
+        this.current = py;
+        py.execute();
+    }
+
+    public void predict() {
+        try {
+            FileWriter fw = new FileWriter("predict.txt");
+            PrintWriter pw = new PrintWriter(fw);
+
+            pw.print(super.getPrediction());
+
+            fw.close();
+            pw.close();
+
+            String args;
+            if (super.getIsWindows()) {
+                args = ".\\venv\\Scripts\\activate && python predict.py " + super.getPath();
+            } else {
+                args = "source ./venv/bin/activate && python3 predict.py " + super.getPath().replace("\\", "/");
+            }
+
+            System.out.println(args);
+
+            Python py = new Python(args, super.getIsWindows(), super.getEpochs(), this.display, "predict");
+            this.current = py;
+            py.execute();
+
+        } catch (IOException err) {
+            System.out.println(err);
+        }
+    }
+
+    public void contBackend() throws IOException {
         
-        Python.setResponsive(super.getResponding());
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
-        Python.run(args, super.getIsWindows(), super.getEpochs());
-        
-        File file = new File("results.txt");
-        Scanner sc = new Scanner(file);
-        
-        String str = sc.nextLine();
-        
-        System.out.println(str);
+        Scanner sc = new Scanner(new File("results.txt"));
+
+        String str = "";
+        try {
+            str = sc.nextLine();
+        } catch (NoSuchElementException e) {
+            System.out.println(e);
+        }
+
         if (str.startsWith("ERROR")) {
             super.setError(true);
             super.setErrorText(str);
         } else if (str == null || str.trim().equals("")) {
             super.setError(true);
         } else {
-            super.setLoss(str);
-            super.setAccuracy(sc.nextLine());
+            super.setOutput(str);
         }
-        
+
         sc.close();
-        
-//        PrintWriter pw = new PrintWriter(file);
-//        pw.print("");
-//        pw.close();
+
+        this.erase();
     }
 
-    public void predict() {
-        try {
-        FileWriter fw = new FileWriter("predict.txt");
-        PrintWriter pw = new PrintWriter(fw);
-
-        pw.print(super.getPrediction());
-
-        fw.close();
-        pw.close(); 
-       
-        String args;
-        if (super.getIsWindows()) {
-            args = ".\\venv\\Scripts\\activate && python predict.py " + super.getPath();
-        } else {
-            args = "source ./venv/bin/activate && python3 predict.py " + super.getPath().replace("\\", "/");
-        } 
-        
-        System.out.println(args);
-
-        Python.run(args, super.getIsWindows(), super.getEpochs());
-        } catch (IOException err) {
-            System.out.println(err);
-        }
-    }
-
-    public void fetchModels() {
-        
-    }
-
-    public void setVars(String[] vars) {
-//      Sets the responding variables of the data
-    }
-
-    public String[] getVars() {
-//      A method to access relevant variables   
-        return this.vars;
-    }
-
-//    The above methods are very general, I would like to implement others that have more specific use cases too
-    public void saveModel(String path) throws IOException {
-//      Saves model by calling a python function
-    }
-
-    public static String importModel(String path) throws IOException {
-//      Imports a specific model to be used
-        return "";
-    }
-    
-        
-    public String getResponsive() {
-        return Python.getResponsive();
+    public void erase() throws IOException {
+        PrintWriter pw = new PrintWriter(new File("results.txt"));
+        pw.print("");
+        pw.close();
     }
 }

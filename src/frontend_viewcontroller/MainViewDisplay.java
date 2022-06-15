@@ -1,11 +1,8 @@
 package frontend_viewcontroller;
 
-import backend_models.*;
-
 import java.awt.*;
 import java.io.*;
 import javax.swing.*;
-import java.util.List;
 
 /**
  *
@@ -16,14 +13,14 @@ public class MainViewDisplay extends JFrame {
     BackendModelSetup theBackendModel;
 
     JLabel textContentLabel;
-    JTextArea textContentField, predictionField, predictionInputField, trainingOutputField, progressField;
+    JTextArea predictionField, predictionInputField, trainingOutputField, progressField;
 
-    JButton infoButton, outputButton, predictButton, trainButton, saveModelToFileButton, importModelFromFileButton, setup;
+    JButton infoButton, outputButton, predictButton, trainButton, saveModelToFileButton, importModelFromFileButton, setup, clear;
     JTextField trainingInput, testingInput, respondingInput, epochs, importedModel, savedName;
 
-    JScrollPane textContentPane, predictionInputPane;
+    JScrollPane textContentPane, predictionInputPane, progressPane;
 
-    JSeparator trainPredict, predictProgress;
+    JSeparator trainPredict, predictProgress, progressSetup;
 
     JComboBox alg;
 
@@ -31,8 +28,6 @@ public class MainViewDisplay extends JFrame {
     
     DefaultBoundedRangeModel model;
 
-
-//    JComponent[] arr = {trainingOutputField, alg};
     public MainViewDisplay(BackendModelSetup aBackend) {
         this.theBackendModel = aBackend;
         this.initComponents();
@@ -64,12 +59,6 @@ public class MainViewDisplay extends JFrame {
         this.textContentLabel.setText("Data Analyzer");
         this.textContentLabel.setFont(new Font("Serif", Font.BOLD, 30));
 
-        this.textContentField = new JTextArea();
-        this.textContentField.setSize(250, 500);
-        this.textContentField.setLineWrap(true);
-        this.textContentField.setEditable(true);
-        this.textContentField.setWrapStyleWord(rootPaneCheckingEnabled);
-
         this.trainingOutputField = new JTextArea();
         this.trainingOutputField.setSize(250, 500);
         this.trainingOutputField.setLineWrap(true);
@@ -84,16 +73,18 @@ public class MainViewDisplay extends JFrame {
         this.predictionField.setToolTipText("You will see the output for your prediction here");
 
         this.progressField = new JTextArea();
-        this.progressField.setSize(250, 500);
         this.progressField.setLineWrap(true);
         this.progressField.setEditable(false);
         this.progressField.setWrapStyleWord(rootPaneCheckingEnabled);
+        this.progressPane = new JScrollPane(this.progressField);
+        this.progressPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        this.progressPane.setSize(250, 500);
 
         this.predictionInputField = new JTextArea();
         this.predictionInputField.setLineWrap(true);
         this.predictionInputField.setEditable(true);
         this.predictionInputField.setWrapStyleWord(rootPaneCheckingEnabled);
-        this.predictionInputField.setToolTipText("Provide prediction input here");
+        this.predictionInputField.setText("Provide your prediction input here. Follow this format for each manipulated column in your dataset in the order by which they are displayed in the file:\nkey1\nvalue1\nkey2\nvalue2\netc. (delete this text before usage)");
         this.predictionInputPane = new JScrollPane(this.predictionInputField);
         this.predictionInputPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         this.predictionInputPane.setSize(250, 500);
@@ -112,24 +103,24 @@ public class MainViewDisplay extends JFrame {
 
         this.setup = new JButton();
         this.setup.setText("Setup");
+        
+        this.clear = new JButton();
+        this.clear.setText("Clear");
 
         this.infoButton = new JButton();
         this.infoButton.setText("Info");
-//        this.infoButton.setFocusPainted(false);
-//        this.infoButton.setBackground(Color.BLUE);
-//        this.infoButton.setForeground(Color.white);
 
         this.predictButton = new JButton();
         this.predictButton.setText("Predict");
-
-        this.textContentPane = new JScrollPane(this.textContentField);
-        this.textContentPane.setSize(500, 500);
 
         this.trainPredict = new JSeparator();
         this.trainPredict.setOrientation(SwingConstants.HORIZONTAL);
 
         this.predictProgress = new JSeparator();
         this.predictProgress.setOrientation(SwingConstants.HORIZONTAL);
+        
+        this.progressSetup = new JSeparator();
+        this.progressSetup.setOrientation(SwingConstants.HORIZONTAL);
 
         this.alg = new JComboBox();
         this.alg.addItem("Optimize");
@@ -137,18 +128,14 @@ public class MainViewDisplay extends JFrame {
         this.alg.addItem("Regression");
 
         this.epochs = new JTextField();
-        this.respondingInput.setToolTipText("Provide x number of epochs to train with {x| 0 < x < 100, x is int}");
+        this.epochs.setToolTipText("Provide x number of epochs to train with {x| 0 < x < 100, x is int}");
 
         this.importedModel = new JTextField();
-        this.importedModel.setText("No model imported");
+        this.importedModel.setText("No model");
         
-        model = new DefaultBoundedRangeModel();
-
+        this.model = new DefaultBoundedRangeModel();
         this.progressBar = new JProgressBar(model);
-//        this.progressBar.setMinimum(0);
-//        this.progressBar.setMaximum(100);
         this.progressBar.setStringPainted(true);
-//        this.progressBar.setValue(0);
 
         /*
          * Choose your LayoutManager for the mainDisplayPane here. See:
@@ -272,7 +259,7 @@ public class MainViewDisplay extends JFrame {
         c.gridy = 6;
         c.gridwidth = 3;
         c.gridheight = 2;
-        c.ipady = 50;
+        c.ipady = 100;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(5, 5, 5, 5);
         mainDisplayPane.add(this.predictionInputPane, c);
@@ -306,13 +293,31 @@ public class MainViewDisplay extends JFrame {
 
         c = new GridBagConstraints();
         c.gridx = 0;
-        c.gridy = 8;
-        c.gridwidth = 1;
+        c.gridy = 13;
+        c.gridwidth = 5;
         c.gridheight = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(5, 5, 5, 5);
         mainDisplayPane.add(this.setup, c);
-
+        
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 14;
+        c.gridwidth = 5;
+        c.gridheight = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(5, 5, 5, 5);
+        mainDisplayPane.add(this.clear, c);
+        
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 12;
+        c.gridwidth = 5;
+        c.gridheight = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(5, 5, 5, 5);
+        mainDisplayPane.add(this.progressSetup, c);
+        
         c = new GridBagConstraints();
         c.gridx = 0;
         c.gridy = 9;
@@ -327,10 +332,10 @@ public class MainViewDisplay extends JFrame {
         c.gridy = 10;
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.gridheight = 1;
-        c.ipady = 50;
+        c.ipady = 150;
         c.fill = GridBagConstraints.HORIZONTAL;
         c.insets = new Insets(5, 5, 5, 5);
-        mainDisplayPane.add(this.progressField, c);
+        mainDisplayPane.add(this.progressPane, c);
 
         c = new GridBagConstraints();
         c.gridx = 0;
@@ -344,63 +349,15 @@ public class MainViewDisplay extends JFrame {
         this.pack();
     }
 
-    public void fillProgress() {
-        GeneralProgressBar worker = new GeneralProgressBar();
-        worker.execute();
-    }
-    
-    public void u(int i) {
-        this.progressBar.setValue(i);
-        this.progressBar.repaint();
-        System.out.println("Tis working" + i);
-    }
-
-    public class GeneralProgressBar extends SwingWorker<Void, Integer> {
-                
-
-        @Override
-        protected Void doInBackground() throws Exception {
-
-//            int i = Python.getProgress();
-//            while (i <= 100) {
-//                publish(i);
-//                progress.setValue(i);
-//                Thread.sleep(100);
-//                i = Python.getProgress();
-//            }
-//            return null;
-            trainingOutputField.setText("The model is currently training");
-            progressField.setText("The operation is complete.");
-            
-            return null;
-        }
-
-//        @Override
-//        protected void process(List<Integer> chunks) {
-//              
-//            progressBar.setValue(chunks.get(chunks.size() - 1));
-//            System.out.println(progressBar.getValue() + " " + (chunks.get(chunks.size() - 1)));
-//            super.process(chunks);
-//        }
-
-        @Override
-        protected void done() {
-            progressField.setText("The operation has completed.");
-            progressBar.setValue(100);
-        }
-    }
-
-    void updateTextContentField() {
+    void predictionOutput(String output) {
         if (this.theBackendModel.theModel == null) {
             System.out.println("It is null");
-            this.textContentField.setText("");
         } else {
-            this.predictionField.setText(this.theBackendModel.theModel.output);
+            this.predictionField.setText(output);
         }
     }
 
     void trainingOutput(String output) {
-        System.out.println(output);
         if (this.theBackendModel.theModel == null) {
             System.out.println("It is null");
         } else {
@@ -432,23 +389,46 @@ public class MainViewDisplay extends JFrame {
             } else {
                 this.theBackendModel.theModel.setTesting(temp);
             }
-            this.theBackendModel.theModel.setResponding(this.respondingInput.getText().trim());
+            this.theBackendModel.theModel.setResponding(this.respondingInput.getText().trim().replace(" ", "_"));
             this.theBackendModel.theModel.setEpochs(this.epochs.getText().trim());
             this.theBackendModel.theModel.setAlg(this.alg.getSelectedItem().toString().trim());
-            this.theBackendModel.theModel.setSave(this.savedName.getText().trim());
+            String name = this.savedName.getText().trim();
+            if (name.equals("") || name == null){
+                name = "my_model";
+            }
+            this.theBackendModel.theModel.setSave(name);
         }
+    }
+    
+    public void clearForPrediction() {
+        this.predictionField.setText("");
+        this.progressField.setText("");
+        this.progressBar.setValue(0);
+    }
+    
+    public void clearForTraining() {
+        this.trainingOutputField.setText("");
+        this.progressField.setText("");
+        this.progressBar.setValue(0);
+    }
+    
+    public void clearForSetup() {
+        this.progressField.setText("");
+        this.progressBar.setValue(0);
     }
     
     public void clear() {
         this.epochs.setText("");
+        this.respondingInput.setText("");
         this.trainingInput.setText("");
         this.testingInput.setText("");
-        this.respondingInput.setText("");
-        this.predictionField.setText("");
         this.predictionInputField.setText("");
-        this.savedName.setText("");
         this.importedModel.setText("No model");
+        this.savedName.setText("");
         this.trainingOutputField.setText("");
+        this.predictionField.setText("");
+        this.progressField.setText("");
+        this.progressBar.setValue(0);
     }
 
     public void delete() throws StringIndexOutOfBoundsException {
@@ -456,27 +436,30 @@ public class MainViewDisplay extends JFrame {
         String newStr = inputText.substring(0, -1);
         this.epochs.setText(newStr);
     }
+    
+    public void disableFunctionality() {
+        this.trainButton.setEnabled(false);
+        this.predictButton.setEnabled(false);
+        this.clear.setEnabled(false);
+        this.setup.setEnabled(false);
+    }
+    
+    public void enableFunctionality() {
+        this.trainButton.setEnabled(true);
+        this.predictButton.setEnabled(true);
+        this.clear.setEnabled(true);
+        this.setup.setEnabled(true);
+    }
 
     public boolean isEpochInRange() {
-        return this.epochs.getText().length() > 1 ? false : true;
+        return this.epochs.getText().length() <= 1;
     }
 
     void errorDisplay(String err) {
         JOptionPane.showMessageDialog(this,
-                "The file(s) you provided could not be found. Please ensure the specified path is correct.",
-                "RileNotFoundError error",
+                err,
+                "ERROR",
                 JOptionPane.ERROR_MESSAGE);
-    }
-
-    String showSaveDialog() {
-        JFileChooser jfc = new JFileChooser();
-        int status = jfc.showSaveDialog(this);
-        if (status == JFileChooser.APPROVE_OPTION) {
-            File theFile = jfc.getSelectedFile();
-            String thePath = theFile.getAbsolutePath();
-            return thePath;
-        }
-        return null;
     }
 
     String showOpenDialog() {
@@ -486,9 +469,21 @@ public class MainViewDisplay extends JFrame {
         if (status == JFileChooser.APPROVE_OPTION) {
             File theFile = jfc.getCurrentDirectory();
             String thePath = theFile.getAbsolutePath();
+            System.out.println(thePath);
             return thePath;
         }
-
         return null;
+    }
+    
+    public void updateProgress(String str) {
+        this.progressField.append(str);
+    }
+    
+    public void updateProgressBar(int val) {
+        this.progressBar.setValue(val);
+    }
+    
+    public int getProgress() {
+        return this.progressBar.getValue();
     }
 }

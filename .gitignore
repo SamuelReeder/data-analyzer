@@ -3,8 +3,6 @@ models/
 /predict.txt
 /results.txt
 
-sample_preds.txt
-
 .vscode/ 
 
 # Byte-compiled / optimized / DLL files

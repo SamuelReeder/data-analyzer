@@ -4,89 +4,88 @@ import pandas as pd
 import sys
 import numpy as np
 import json
+from tensorflow.python.ops.numpy_ops import np_config        
+np_config.enable_numpy_behavior()
 
-with open('predict.txt') as f:
-    if f.readable:
-      global sample
-      sample = f.read()
+def predict():
+    with open('predict.txt') as f:
+        if f.readable:
+            global sample
+            sample = f.read()
+    with open(sys.argv[1] + '/config.txt') as f:
+        if f.readable:
+            global info
+            info = f.readlines()
+    
+    print("Collection of input completed")
 
+    model_type = info[0].strip()
+    if "Regression" not in model_type:
+        info[1] = info[1].replace('\'', '"')
+        key = json.loads(info[1])
+    else: 
+        responsive = info[1]
 
-with open(sys.argv[1] + '/config.txt') as f:
-    if f.readable:
-      global info
-      info = f.readlines()
+    def config_type(val):
+        try: 
+            return float64(val)
+        except:
+            return val
 
-model_type = info[0].strip()
-print(model_type)
-if "Regression" not in model_type:
-    info[1] = info[1].replace('\'', '"')
-    key = json.loads(info[1])
-    print(key)
+    def convert(lst):
+        pred_list = lst.split("\n")
+        res_dct = {pred_list[i].strip(): config_type(pred_list[i + 1]) for i in range(0, len(pred_list) - 1, 2)}
+        return res_dct 
 
-def config_type(val):
-    try: 
-        return float64(val)
-    except:
-        return val
+    converted = convert(sample)
 
-def convert(lst):
-    pred_list = lst.split()
-    res_dct = {pred_list[i].strip(): config_type(pred_list[i + 1]) for i in range(0, len(pred_list) - 1, 2)}
-    return res_dct 
+    loaded_model = tf.keras.models.load_model(sys.argv[1])
 
-converted = convert(sample)
+    input_dict = {str(name).lower().replace(" ", "_"): tf.convert_to_tensor([value]) for name, value in converted.items()}
 
-loaded_model = tf.keras.models.load_model(sys.argv[1])
-
-# loaded_model = tf.keras.models.load_model('models/new_model')
-
-print(len(loaded_model.layers))
-
-input_dict = {str(name).lower(): tf.convert_to_tensor([value]) for name, value in converted.items()}
-
-try:
+    print("Preprocessing of input completed")
+    
     if model_type == "Regression True":
         test = pd.DataFrame(input_dict)
-        predict = loaded_model.predict(test)
+        predict = loaded_model.predict(test)[0][0]
         with open('results.txt', 'w+') as f:
-            f.write(str(predict))
+            f.write("\"" + str(responsive) + "\" has a predicted value of: " + str(round(predict, 2)))
     elif model_type == "Regression False":
         predict = loaded_model.predict(input_dict)
         with open('results.txt', 'w+') as f:
-            f.write(str(predict))
+            f.write("\"" + str(responsive) + "\" has a predicted value of: " + str(round(predict, 2)))
     elif model_type == "Sparse":
         predict = loaded_model.predict(input_dict)
-        prob = tf.nn.softmax(predict[0]).numpy()
-        max_prob = np.amax(prob)
+        max_prob = max(predict[0])
         result = np.argmax(predict[0])
+
+        final = round((100 * max_prob), 2)
         for i in key:
-            if key[i] == result:
+            if key[i] - 1 == result:
                 with open('results.txt', 'w+') as f:
-                    f.write(("%.1f" % (100 * (max_prob))) + "% certain of " + str(i) + " classification.")
+                    f.write(("%.1f" % final) + "% certain of \"" + str(i) + "\" classification.")
+                break
     elif model_type == "Binary":
         predict = loaded_model.predict(input_dict)
-        print(type(predict))
-        print(predict)
-        print(loaded_model)
-        print(loaded_model.distribute_strategy)
         prob = tf.nn.sigmoid(predict[0])
-        result = np.argmax(predict[0])
-        print(result)
-        # for i in key:
-        #     if key[i] == result:
-        with open('results.txt', 'w+') as f:
-            f.write(("%.1f" % (100 * (prob))) + "% certain of " + str(list(key)[0]) + " classification.")
-except ValueError as err:
-    try:
-        with open('results.txt', 'w+') as i:
-            e = str(err)
-            formatted_err = e[e.index("ValueError: "):]
-            i.write("ERROR: " + formatted_err)
-    except Exception as exc:
-        with open('results.txt', 'w+') as i:
-            i.write("ERROR: An unknown error occured.")
-            print(str(exc))
-except Exception as err:
+
+        label = 2
+        if prob < 0.5:
+            label = 1
+            prob = 1 - prob
+        
+        final = round((100 * prob), 2)
+        for i in key:
+            if key[i] == label:
+                with open('results.txt', 'w+') as f:
+                    f.write(("%.1f" % final) + "% certain of \"" + str(i) + "\" classification.")
+                break
+            
+try:
+    predict()
+except Exception as e:
     with open('results.txt', 'w+') as i:
-        i.write("ERROR: An unknown error occured.")
-        print(str(err))
+        i.write("ERROR: " + str(e))
+    print(str(e))
+    sys.exit()
+
