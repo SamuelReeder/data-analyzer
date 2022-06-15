@@ -33,18 +33,24 @@ elif sys.argv[1] == "test3":
   alg = "Optimization"
   epochs = 10
 else:
-  training = sys.argv[1]
-  testing = None
-  if sys.argv[2] != 'none':
-      testing = sys.argv[2]
+  try:
+    training = sys.argv[1]
+    testing = None
+    if sys.argv[2] != 'none':
+        testing = sys.argv[2]
 
-  alg = sys.argv[3]
+    alg = sys.argv[3]
 
-  epochs = int(sys.argv[4])
+    epochs = int(sys.argv[4])
 
-  responsive = str(sys.argv[5]).lower()
-  
-  path = 'models/' + str(sys.argv[6])
+    responsive = str(sys.argv[5]).lower()
+    
+    path = 'models/' + str(sys.argv[6])
+  except Exception as e:
+    with open('results.txt', 'w+') as f:
+      f.write("ERROR: " + str(e))
+    print(str(e))
+    sys.exit()
 
 try:
   d = p.PreProcessing(responsive, training, testing, True if testing is None else False, alg)

@@ -2,12 +2,13 @@ import pandas as pd
 import numpy as np
 from tensorflow.keras.preprocessing.text import Tokenizer
 import sys
+import re
 
 class CSVData:
 
     def __init__(self, train, test, together, responding, alg):
         column_names = pd.read_csv(train, nrows=1).columns.tolist()
-        column_names = [str(x).strip().lower().replace(" ", "_") for x in column_names]
+        column_names = [re.sub(r'[^\w\s]', '_', str(x).strip().lower().replace(" ", "_")) for x in column_names]
         print(column_names)
         try:
             if not together:
@@ -23,9 +24,11 @@ class CSVData:
             self.r_dtype = data[responding].dtype
             print(alg)
             if CSVData.isItClassification(data, responding) and alg != "Regression":
+                print("Tokenized")
                 data[responding] = data[responding].astype(str)
                 data[responding], self.key = CSVData.tokenize(data[responding])
             else:
+                print("Not tokenized")
                 self.key = {str(i):i for i in data[responding].unique()}
             
             self.train, self.test = np.split(data.sample(frac=1), [int(0.9*len(data))])

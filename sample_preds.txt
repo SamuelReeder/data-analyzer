@@ -1,6 +1,5 @@
 
 
-
 serial
 64   
 player_name
@@ -17,25 +16,6 @@ dribbles
 27  
 match_played
 6
-
-survived
-1
-sex
-female
-age 
-28
-n_siblings_spouses 
-1
-parch 
-0
-class
-First
-deck
-B
-embark_town
-Cherbourg
-alone
-n
 
 survived
 0

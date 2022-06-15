@@ -2,7 +2,6 @@ package backend_models;
 
 import frontend_viewcontroller.MainViewDisplay;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -103,6 +102,13 @@ public class Model extends Information {
     }
 
     public void erase() throws IOException {
+        
+        try {
+            Thread.sleep(150);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         PrintWriter pw = new PrintWriter(new File("results.txt"));
         pw.print("");
         pw.close();

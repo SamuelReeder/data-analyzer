@@ -4,6 +4,7 @@ import pandas as pd
 import sys
 import numpy as np
 import json
+import re
 from tensorflow.python.ops.numpy_ops import np_config        
 np_config.enable_numpy_behavior()
 
@@ -41,7 +42,7 @@ def predict():
 
     loaded_model = tf.keras.models.load_model(sys.argv[1])
 
-    input_dict = {str(name).lower().replace(" ", "_"): tf.convert_to_tensor([value]) for name, value in converted.items()}
+    input_dict = {re.sub(r'[^\w\s]', '_', str(name).lower().replace(" ", "_")): tf.convert_to_tensor([value]) for name, value in converted.items()}
 
     print("Preprocessing of input completed")
     
