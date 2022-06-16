@@ -92,9 +92,10 @@ public class Python extends SwingWorker<Integer, String> {
                 display.updateProgress(message);
                 if (message.contains("pip in")) {
                     this.display.updateProgressBar(start);
-                } else if (message.contains(this.step + "))")) {
+                } else if (message.contains(this.step + "))") || message.contains("Collecting")) {
                     double progress = (double)this.step / 58.0;
                     this.display.updateProgressBar(start + (int)Math.round(progress * 85));
+                    this.step++;
                 }
             }
         } else if (this.type.equals("predict")) {

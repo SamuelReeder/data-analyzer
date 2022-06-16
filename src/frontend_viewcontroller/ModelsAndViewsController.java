@@ -73,10 +73,11 @@ public class ModelsAndViewsController {
                         switch (theBackendModel.theModel.current.getState()) {
                             case DONE:
                                 try {
-                                    cont();
-                                } catch (IOException ex) {
-                                    Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
-                                }
+                                cont();
+                            } catch (IOException ex) {
+                                Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
+                                theMainViewDisplay.enableFunctionality();
+                            }
                         }
                     }
                 }
@@ -104,13 +105,26 @@ public class ModelsAndViewsController {
             theMainViewDisplay.clearForPrediction();
             theMainViewDisplay.disableFunctionality();
             if (theBackendModel.theModel == null) {
-                System.out.println("Model is null");
-                return;
+                try {
+                    theBackendModel.theModel = new Model("", theMainViewDisplay);
+                } catch (IOException ex) {
+                    Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
             theMainViewDisplay.getPrediction();
-            if (theBackendModel.theModel.getPath().trim().equals("") || theBackendModel.theModel.getPath() == null) {
-                theBackendModel.theModel.setPath(theMainViewDisplay.importedModel.getText());
+            String path = "";
+            try {
+                if (theBackendModel.theModel.getPath().trim().equals("") || theBackendModel.theModel.getPath().trim().equals("No model")) {
+                    theMainViewDisplay.errorDisplay("ERROR: please import model");
+                    theMainViewDisplay.enableFunctionality();
+                    return;
+                }
+            } catch (NullPointerException e) {
+                theMainViewDisplay.errorDisplay("ERROR: please import model");
+                theMainViewDisplay.enableFunctionality();
+                return;
             }
+
             theBackendModel.theModel.predict();
             theBackendModel.theModel.current.addPropertyChangeListener(new PropertyChangeListener() {
                 @Override
@@ -120,17 +134,18 @@ public class ModelsAndViewsController {
                         switch (theBackendModel.theModel.current.getState()) {
                             case DONE:
                                 try {
-                                    cont();
-                                } catch (IOException ex) {
-                                    Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
-                                }
+                                cont();
+                            } catch (IOException ex) {
+                                Logger.getLogger(ModelsAndViewsController.class.getName()).log(Level.SEVERE, null, ex);
+                                theMainViewDisplay.enableFunctionality();
+                            }
                         }
                     }
                 }
             });
         }
-        
-        public void cont() throws IOException {            
+
+        public void cont() throws IOException {
             theBackendModel.theModel.contBackend();
             if (theBackendModel.theModel.getError()) {
                 String text = theBackendModel.theModel.getErrorText();
@@ -167,9 +182,9 @@ public class ModelsAndViewsController {
 
             String args;
             if (theBackendModel.theModel.getIsWindows()) {
-                args = "python -m venv --without-pip .\\venv && .\\venv\\Scripts\\activate && python -m pip install --upgrade pip && pip install -r requirements.txt";;
+                args = "python -m venv .\\venv && .\\venv\\Scripts\\activate && python -m pip install --upgrade pip && pip install -r requirements.txt";;
             } else {
-                args = "python3 -m venv --without-pip ./venv && source ./venv/bin/activate && python3 -m pip install --upgrade pip && pip install -r requirements.txt";
+                args = "python3 -m venv ./venv && source ./venv/bin/activate && python3 -m pip install --upgrade pip && pip install -r requirements.txt";
             }
 
             System.out.println(args);
@@ -226,10 +241,9 @@ public class ModelsAndViewsController {
         this.theMainViewDisplay.clear.addActionListener(new ClearAction());
         this.theMainViewDisplay.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e)
-            {
+            public void windowClosing(WindowEvent e) {
                 System.exit(0);
             }
-        });  
+        });
     }
 }

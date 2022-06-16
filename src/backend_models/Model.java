@@ -84,7 +84,7 @@ public class Model extends Information {
         try {
             str = sc.nextLine();
         } catch (NoSuchElementException e) {
-            System.out.println(e);
+            str = "ERROR: an unknown error occured. Please try using another algorithm if possible.";
         }
 
         if (str.startsWith("ERROR")) {

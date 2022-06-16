@@ -371,6 +371,7 @@ public class MainViewDisplay extends JFrame {
         } else {
             System.out.println(this.predictionInputField.getText().trim());
             this.theBackendModel.theModel.setPrediction(this.predictionInputField.getText().trim());
+            this.theBackendModel.theModel.setPath(this.importedModel.getText());
         }
     }
 

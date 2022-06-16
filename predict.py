@@ -53,8 +53,9 @@ def predict():
             f.write("\"" + str(responsive) + "\" has a predicted value of: " + str(round(predict, 2)))
     elif model_type == "Regression False":
         predict = loaded_model.predict(input_dict)
+        final_pred = predict[0][0]
         with open('results.txt', 'w+') as f:
-            f.write("\"" + str(responsive) + "\" has a predicted value of: " + str(round(predict, 2)))
+            f.write("\"" + str(responsive) + "\" has a predicted value of: " + str(round(final_pred, 2)))
     elif model_type == "Sparse":
         predict = loaded_model.predict(input_dict)
         max_prob = max(predict[0])

@@ -59,6 +59,7 @@ player_name
 Neuer
 club
 Bayern
+position
 assists
 1  
 corner_taken
@@ -110,4 +111,21 @@ CGPA
 Research
 1
 
-
+serial
+1
+player_name
+Bruno Fernandes
+club
+Man. United
+position
+midfielder
+assists
+7
+corner_taken
+10
+offsides
+2
+dribbles
+7
+match_played
+7

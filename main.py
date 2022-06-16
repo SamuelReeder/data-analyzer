@@ -16,8 +16,8 @@ if sys.argv[1] == "test":
   epochs = 14
 elif sys.argv[1] == "test2":
   training = "C:/Users/Sam/Downloads/auto-mpg.csv"
-  training = "C:/Users/Sam/Downloads/wine.csv"
-  training = "C:/Users/Sam/Downloads/Admission_Predict.csv"
+  # training = "C:/Users/Sam/Downloads/wine.csv"
+  # training = "C:/Users/Sam/Downloads/Admission_Predict.csv"
   # training = "C:/Users/Sam/Downloads/jena_climate_2009_2016.csv"
   # training = "C:/Users/Sam/Downloads/taxi-fares.csv"
   testing = None
