@@ -137,7 +137,7 @@ def regression_model(preprocessing_head, inputs):
   temp_model = tf.keras.Model(inputs, result)
   
   temp_model.compile(loss=tf.losses.MeanAbsoluteError(),
-                optimizer=tf.optimizers.Adam(learning_rate=0.0001))
+                optimizer=tf.optimizers.Adam(learning_rate=learning_rate))
   
   return temp_model
 
